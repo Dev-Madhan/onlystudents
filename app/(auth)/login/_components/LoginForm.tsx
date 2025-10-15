@@ -1,14 +1,20 @@
 "use client";
 
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Button} from "@/components/ui/button";
-import {GithubIcon, Loader, Loader2, Send} from "lucide-react";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import {authClient} from "@/lib/auth-client";
-import {toast} from "sonner";
-import {useState, useTransition} from "react";
-import {useRouter} from "next/navigation";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { GithubIcon, Loader, Loader2, Send } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
     const router = useRouter();
@@ -16,7 +22,7 @@ export function LoginForm() {
     const [emailPending, startEmailTransition] = useTransition();
     const [email, setEmail] = useState("");
 
-    async function signInWithGithub(){
+    async function signInWithGithub() {
         startGithubTransition(async () => {
             await authClient.signIn.social({
                 provider: "github",
@@ -45,59 +51,85 @@ export function LoginForm() {
                     },
                     onError: () => {
                         toast.error("Error in sending email");
-                    }
-                }
-            })
-        })
+                    },
+                },
+            });
+        });
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-xl">Welcome Back!</CardTitle>
-                <CardDescription className="font-sans">Login with your Github or Email account</CardDescription>
-            </CardHeader>
+        <div className="px-4">
+            <Card className="w-full max-w-sm mx-auto shadow-md border-2 border-border rounded-2xl">
+                <CardHeader className="space-y-1 text-center">
+                    <CardTitle className="text-xl font-semibold ">
+                        Welcome Back!
+                    </CardTitle>
+                    <CardDescription className="font-sans text-muted-foreground">
+                        Login with your Github or Email account
+                    </CardDescription>
+                </CardHeader>
 
-            <CardContent className="flex flex-col gap-4">
-                <Button disabled={githubPending} onClick={signInWithGithub} className="w-full" variant="outline">
-                    {githubPending ? (
-                        <>
-                            <Loader className="size-4 animate-spin" />
-                            <span className="font-sans">Loading...</span>
-                        </>
-                    ):(
-                        <>
-                            <GithubIcon className="size-4" />
-                            Sign in with Github
-                        </>
-                    )}
-                </Button>
-
-                <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-                    <span className="relative z-10 bg-card px-2 text-muted-foreground font-sans">Or continue with</span>
-                </div>
-
-                <div className="grid gap-3">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="example@gmail.com" required className="font-sans text-sm"/>
-                    </div>
-
-                    <Button onClick={signInWithEmail} disabled={emailPending}>
-                        {emailPending ? (
+                <CardContent className="flex flex-col gap-5">
+                    <Button
+                        disabled={githubPending}
+                        onClick={signInWithGithub}
+                        className="w-full font-sans"
+                        variant="outline"
+                    >
+                        {githubPending ? (
                             <>
-                            <Loader2 className="size-4 animate-spin" />
-                                <span className="font-sans">Loading...</span>
+                                <Loader className="size-4 animate-spin" />
+                                <span className="ml-2">Loading...</span>
                             </>
-                        ):(
+                        ) : (
                             <>
-                            <Send className="size-4" />
-                                <span>Continue with Email</span>
+                                <GithubIcon className="size-4" />
+                                <span className="ml-2">Sign in with Github</span>
                             </>
                         )}
                     </Button>
-                </div>
-            </CardContent>
-        </Card>
+
+                    <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <span className="relative z-10 bg-card px-3 text-muted-foreground font-sans">
+              Or continue with
+            </span>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <div className="grid gap-2">
+                            <Label htmlFor="email" className="font-sans text-sm">
+                                Email
+                            </Label>
+                            <Input
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                type="email"
+                                placeholder="example@gmail.com"
+                                required
+                                className="font-sans text-sm"
+                            />
+                        </div>
+
+                        <Button
+                            onClick={signInWithEmail}
+                            disabled={emailPending}
+                            className="font-sans"
+                        >
+                            {emailPending ? (
+                                <>
+                                    <Loader2 className="size-4 animate-spin" />
+                                    <span className="ml-2">Loading...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="size-4" />
+                                    <span className="ml-2">Continue with Email</span>
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
     );
 }
