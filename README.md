@@ -1,4 +1,4 @@
-# Studix - Next.js Application
+# Only Students - Next.js Application
 
 This is a [Next.js](https://nextjs.org) project with authentication, Prisma ORM, and TypeScript.
 
