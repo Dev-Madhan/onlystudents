@@ -20,7 +20,7 @@ import Logo from "@/app/src/assets/images/Logo.png";
 const navigationLinks = [
     { href: "/", label: "Home", icon: HouseIcon, active: true },
     { href: "/courses", label: "Courses", icon: BookIcon },
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboardIcon },
+    { href: "/admin", label: "Dashboard", icon: LayoutDashboardIcon },
 ];
 
 export default function Navbar() {
@@ -43,10 +43,10 @@ export default function Navbar() {
                                         >
                                             <Icon
                                                 size={16}
-                                                className="text-muted-foreground/80"
+                                                className="text-muted-foreground/80 font-medium"
                                                 aria-hidden="true"
                                             />
-                                            <span className="font-sans">{link.label}</span>
+                                            <span className="font-mono">{link.label}</span>
                                         </NavigationMenuLink>
                                     </NavigationMenuItem>
                                 );
@@ -59,12 +59,12 @@ export default function Navbar() {
                 <div className="flex flex-1 justify-center">
                     <Link href="/" className="flex items-center space-x-2">
                         <Image src={Logo} alt="Logo" className="size-9" />
-                        <span className="font-bold text-base">Only Students</span>
+                        <span className="font-bold font-mono text-base">Only Students</span>
                     </Link>
                 </div>
 
                 {/* Right: Theme Toggle + Auth Buttons */}
-                <div className="flex flex-1 items-center justify-end space-x-3">
+                <div className="flex flex-1 items-center justify-end space-x-3 font-mono font-medium">
                     <ThemeToggle />
                     {isPending ? null : session ? (
                         <UserDropdown

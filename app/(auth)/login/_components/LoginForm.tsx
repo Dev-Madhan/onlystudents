@@ -61,10 +61,10 @@ export function LoginForm() {
         <div className="px-4">
             <Card className="w-full max-w-sm mx-auto shadow-md border-2 border-border rounded-2xl">
                 <CardHeader className="space-y-1 text-center">
-                    <CardTitle className="text-xl font-semibold ">
+                    <CardTitle className="text-xl font-serif font-semibold ">
                         Welcome Back!
                     </CardTitle>
-                    <CardDescription className="font-sans text-muted-foreground">
+                    <CardDescription className="font-mono text-muted-foreground">
                         Login with your Github or Email account
                     </CardDescription>
                 </CardHeader>
@@ -73,7 +73,7 @@ export function LoginForm() {
                     <Button
                         disabled={githubPending}
                         onClick={signInWithGithub}
-                        className="w-full font-sans"
+                        className="w-full font-mono"
                         variant="outline"
                     >
                         {githubPending ? (
@@ -90,14 +90,14 @@ export function LoginForm() {
                     </Button>
 
                     <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-            <span className="relative z-10 bg-card px-3 text-muted-foreground font-sans">
+            <span className="relative z-10 bg-card px-3 text-muted-foreground font-serif">
               Or continue with
             </span>
                     </div>
 
                     <div className="grid gap-3">
                         <div className="grid gap-2">
-                            <Label htmlFor="email" className="font-sans text-sm">
+                            <Label htmlFor="email" className="font-mono text-sm">
                                 Email
                             </Label>
                             <Input
@@ -106,14 +106,14 @@ export function LoginForm() {
                                 type="email"
                                 placeholder="example@gmail.com"
                                 required
-                                className="font-sans text-sm"
+                                className="font-mono text-sm"
                             />
                         </div>
 
                         <Button
                             onClick={signInWithEmail}
                             disabled={emailPending}
-                            className="font-sans"
+                            className="font-mono"
                         >
                             {emailPending ? (
                                 <>

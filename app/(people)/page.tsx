@@ -39,14 +39,14 @@ export default function Home() {
         <>
             <section className="relative py-20">
                 <div className="flex flex-col items-center text-center space-y-8">
-                    <Badge variant="outline" className="font-sans">
+                    <Badge variant="outline" className="font-serif font-medium">
                         The Evolution of Online Education
                     </Badge>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight">Transform Your Educational Journey</h1>
 
-                    <p className="max-w-[700px] text-muted-foreground md:text-xl font-sans">Experience a fresh approach to education with our dynamic, interactive learning management system. Unlock top-tier courses, accessible anytime, anywhere. </p>
+                    <p className="max-w-[700px] text-muted-foreground md:text-xl font-serif">Experience a fresh approach to education with our dynamic, interactive learning management system. Unlock top-tier courses, accessible anytime, anywhere. </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 mt-8 font-sans">
+                    <div className="flex flex-col sm:flex-row gap-4 mt-8 font-mono font-medium">
                         <Link className={buttonVariants({
                             size: "lg",
                         })} href="/courses" >Explore Courses</Link>
@@ -64,10 +64,10 @@ export default function Home() {
                     <Card key={index} className="hover:shadow-lg transition-shadow">
                         <CardHeader>
                             <div className="text-4xl mb-4">{feature.icon}</div>
-                            <CardTitle className="font-sans text-2xl">{feature.title}</CardTitle>
+                            <CardTitle className="font-mono text-2xl">{feature.title}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="font-sans text-muted-foreground">{feature.description}</p>
+                            <p className="font-serif text-muted-foreground">{feature.description}</p>
                         </CardContent>
 
                     </Card>

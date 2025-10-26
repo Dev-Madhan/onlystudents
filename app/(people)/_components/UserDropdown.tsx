@@ -66,15 +66,15 @@ export function UserDropdown({image, name, email}: iAppProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className="max-w-64">
                 <DropdownMenuLabel className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium text-foreground font-sans">
+          <span className="truncate text-sm font-medium text-foreground font-mono">
             {name}
           </span>
-                    <span className="truncate text-xs font-normal text-muted-foreground">
+                    <span className="truncate text-xs font-normal font-serif text-muted-foreground">
             {email}
           </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup className="font-sans font-medium">
+                <DropdownMenuGroup className="font-mono font-medium">
                     <DropdownMenuItem asChild>
                         <Link href="/">
                             <Home size={16} className="opacity-60" aria-hidden="true" />
@@ -97,7 +97,7 @@ export function UserDropdown({image, name, email}: iAppProps) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut}>
                     <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
-                    <span className="font-sans">Logout</span>
+                    <span className="font-mono">Logout</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
