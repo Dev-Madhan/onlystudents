@@ -14,9 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import slugify from "slugify";
 
 export default function CourseCreationPage() {
-    // NOTE: resolver cast to `any` to avoid TS2719 caused by multiple react-hook-form types installed
+    // 1. Define your form.
     const form = useForm<CourseSchemaType>({
-        resolver: zodResolver(courseSchema) as any,
+        resolver: zodResolver(courseSchema),
         defaultValues: {
             title: "",
             description: "",
@@ -31,6 +31,8 @@ export default function CourseCreationPage() {
         },
     });
 
+
+    // 2. Define a submit handler.
     function onSubmit(values: CourseSchemaType) {
         console.log(values);
     }
