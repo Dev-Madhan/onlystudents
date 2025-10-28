@@ -1,7 +1,20 @@
+import Link from "next/link";
+import {buttonVariants} from "@/components/ui/button";
+
 export default function CoursesPage(){
     return(
-        <div>
-            <h1>Inga dhaan daw Courses oda content varum daw punda.</h1>
-        </div>
+        <>
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold">Your Courses</h1>
+
+                <Link href="/admin/courses/create" className={buttonVariants()}>
+                    Create Course
+                </Link>
+            </div>
+
+            <div>
+                <h1>Explore all the amazing courses waiting for you right here!</h1>
+            </div>
+        </>
     )
 }
