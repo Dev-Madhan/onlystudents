@@ -92,7 +92,7 @@ export function NavUser() {
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">
+                                    <span className="truncate mb-0.5 font-medium">
                                         {session?.user.name && session.user.name.length > 0
                                             ? session.user.name
                                             : session?.user.email.split("@")[0]}
