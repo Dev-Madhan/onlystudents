@@ -253,30 +253,32 @@ function Sidebar({
   )
 }
 
+// In your sidebar.tsx — replace SidebarTrigger
 function SidebarTrigger({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+                            className,
+                            onClick,
+                            ...props
+                        }: React.ComponentProps<typeof Button>) {
+    const { toggleSidebar } = useSidebar();
 
-  return (
-    <Button
-      data-sidebar="trigger"
-      data-slot="sidebar-trigger"
-      variant="ghost"
-      size="icon"
-      className={cn("size-7", className)}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
-      {...props}
-    >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
-  )
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            className={cn("size-7", className)}
+            onClick={(e) => {
+                onClick?.(e);
+                toggleSidebar();
+            }}
+            aria-label="Toggle Sidebar"
+            data-sidebar="trigger"
+            suppressHydrationWarning
+            {...props}
+        >
+            <PanelLeftIcon />
+            <span className="sr-only">Toggle Sidebar</span>
+        </Button>
+    );
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
