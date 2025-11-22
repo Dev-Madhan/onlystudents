@@ -6,7 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/S3Client";
 
-export const fileUploadSchema = z.object({
+// 👇 REMOVED 'export' keyword here
+const fileUploadSchema = z.object({
     fileName: z.string().min(1, { message: "File name is required" }),
     contentType: z.string().min(1, { message: "Content type is required" }),
     size: z.number().min(1, { message: "File size is required" }),
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
 
         // Send correct response object
         return NextResponse.json({
-            presignedUrl, // 👈 FIXED (frontend expects this exact key)
+            presignedUrl,
             key: uniqueKey,
         });
     } catch (error) {
