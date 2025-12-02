@@ -13,7 +13,7 @@ export default function NotAdminRoute(){
                     </div>
 
                     <CardTitle className="text-2xl">Access Restricted</CardTitle>
-                    <CardDescription className="font-medium font-serif max-w-xs mx-auto">Hey! You are not an admin, which means you can't create any courses or stuff like that...</CardDescription>
+                    <CardDescription className="font-medium font-serif max-w-xs mx-auto">Hey! You are not an admin, which means you can&apos;t create any courses or stuff like that...</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Link href="/" className={buttonVariants({
