@@ -1,33 +1,61 @@
-import { z } from "zod";
-import { NextResponse } from "next/server";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { env } from "@/lib/env";
-import { v4 as uuidv4 } from "uuid";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { S3 } from "@/lib/S3Client";
+import {z} from "zod";
+import {NextResponse} from "next/server";
+import {PutObjectCommand} from "@aws-sdk/client-s3";
+import {env} from "@/lib/env";
+import {v4 as uuidv4} from "uuid";
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
+import {S3} from "@/lib/S3Client";
+import arcjet, {detectBot, fixedWindow} from "@/lib/arcjet";
+import {headers} from "next/headers";
+import {auth} from "@/lib/auth";
+import {requireAdmin} from "@/app/data/admin/require-admin";
 
 // 👇 REMOVED 'export' keyword here
 const fileUploadSchema = z.object({
-    fileName: z.string().min(1, { message: "File name is required" }),
-    contentType: z.string().min(1, { message: "Content type is required" }),
-    size: z.number().min(1, { message: "File size is required" }),
+    fileName: z.string().min(1, {message: "File name is required"}),
+    contentType: z.string().min(1, {message: "Content type is required"}),
+    size: z.number().min(1, {message: "File size is required"}),
     isImage: z.boolean(),
 });
 
+const aj = arcjet.withRule(
+    detectBot({
+        mode: "LIVE",
+        allow: [],
+    })
+).withRule(
+    fixedWindow({
+        mode: "LIVE",
+        window: "1m",
+        max: 5,
+    })
+);
+
 export async function POST(request: Request) {
+    const session = await requireAdmin();
+
+
     try {
+        const decision = await aj.protect(request, {
+            fingerprint: session?.user.id as string,
+        });
+
+        if (decision.isDenied()) {
+            return NextResponse.json({error: "Dude, Not Good"}, {status: 429});
+        }
+
         const body = await request.json();
 
         const validation = fileUploadSchema.safeParse(body);
 
         if (!validation.success) {
             return NextResponse.json(
-                { error: "Invalid Request Body" },
-                { status: 400 }
+                {error: "Invalid Request Body"},
+                {status: 400}
             );
         }
 
-        const { fileName, contentType, size } = validation.data;
+        const {fileName, contentType, size} = validation.data;
 
         // Create unique S3 object key
         const uniqueKey = `${uuidv4()}-${fileName}`;
@@ -54,8 +82,8 @@ export async function POST(request: Request) {
         console.error("Upload Error:", error);
 
         return NextResponse.json(
-            { error: "Failed to generate presigned URL." },
-            { status: 500 }
+            {error: "Failed to generate presigned URL."},
+            {status: 500}
         );
     }
 }

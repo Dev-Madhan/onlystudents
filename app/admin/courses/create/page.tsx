@@ -1,21 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftIcon, PlusIcon, SparkleIcon } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { courseCategories, courseLevels, courseSchema, CourseSchemaType, courseStatus } from "@/lib/zodSchema";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {ArrowLeftIcon, Loader2, PlusIcon, SparkleIcon} from "lucide-react";
+import {Button, buttonVariants} from "@/components/ui/button";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {courseCategories, courseLevels, courseSchema, CourseSchemaType, courseStatus} from "@/lib/zodSchema";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import slugify from "slugify";
 import {RichTextEditor} from "@/components/rich-text-editor/Editor";
 import Uploader from "@/components/file-uploader/Uploader";
+import {useTransition} from "react";
+import {tryCatch} from "@/hooks/try-catch";
+import {CreateCourse} from "@/app/admin/courses/create/actions";
+import {toast} from "sonner";
+import {useRouter} from "next/navigation";
 
 export default function CourseCreationPage() {
+    const [pending, startTransition] = useTransition();
+    const router = useRouter();
+
     // 1. Define your form.
     const form = useForm<CourseSchemaType>({
         resolver: zodResolver(courseSchema),
@@ -36,7 +44,22 @@ export default function CourseCreationPage() {
 
     // 2. Define a submit handler.
     function onSubmit(values: CourseSchemaType) {
-        console.log(values);
+        startTransition(async () => {
+            const {data: result, error} = await tryCatch(CreateCourse(values));
+
+            if (error) {
+                toast.error("An unexpected error occurred. Please try again later.");
+                return;
+            }
+
+            if (result.status === "success") {
+                toast.success(result.message);
+                form.reset();
+                router.push("/admin/courses");
+            } else if (result.status === "error") {
+                toast.error(result.message);
+            }
+        })
     }
 
     return (
@@ -49,7 +72,7 @@ export default function CourseCreationPage() {
                         size: "icon",
                     })}
                 >
-                    <ArrowLeftIcon className="size-4" />
+                    <ArrowLeftIcon className="size-4"/>
                 </Link>
                 <h1 className="text-2xl font-bold">Create Courses</h1>
             </div>
@@ -69,7 +92,7 @@ export default function CourseCreationPage() {
                             <FormField
                                 control={form.control}
                                 name="title"
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Title</FormLabel>
                                         <FormControl>
@@ -79,7 +102,7 @@ export default function CourseCreationPage() {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )}
                             />
@@ -89,7 +112,7 @@ export default function CourseCreationPage() {
                                 <FormField
                                     control={form.control}
                                     name="slug"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem className="w-full">
                                             <FormLabel>Slug</FormLabel>
                                             <FormControl>
@@ -99,7 +122,7 @@ export default function CourseCreationPage() {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -111,7 +134,7 @@ export default function CourseCreationPage() {
                                         const titleValue = form.getValues("title").trim();
 
                                         if (!titleValue) {
-                                            form.setError("title", { message: "Please enter a title before generating a slug" });
+                                            form.setError("title", {message: "Please enter a title before generating a slug"});
                                             return;
                                         }
 
@@ -121,10 +144,10 @@ export default function CourseCreationPage() {
                                             trim: true,
                                         });
 
-                                        form.setValue("slug", slug, { shouldValidate: true });
+                                        form.setValue("slug", slug, {shouldValidate: true});
                                     }}
                                 >
-                                    Generate Slug <SparkleIcon className="ml-1" size={16} />
+                                    Generate Slug <SparkleIcon className="ml-1" size={16}/>
                                 </Button>
                             </div>
 
@@ -132,7 +155,7 @@ export default function CourseCreationPage() {
                             <FormField
                                 control={form.control}
                                 name="smallDescription"
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Small Description</FormLabel>
                                         <FormControl>
@@ -142,7 +165,7 @@ export default function CourseCreationPage() {
                                                 {...field}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )}
                             />
@@ -151,13 +174,13 @@ export default function CourseCreationPage() {
                             <FormField
                                 control={form.control}
                                 name="description"
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Description</FormLabel>
                                         <FormControl>
-                                            <RichTextEditor field={field} />
+                                            <RichTextEditor field={field}/>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )}
                             />
@@ -166,13 +189,13 @@ export default function CourseCreationPage() {
                             <FormField
                                 control={form.control}
                                 name="fileKey"
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Thumbnail Image</FormLabel>
                                         <FormControl>
-                                            <Uploader onChange={field.onChange} value={field.value} />
+                                            <Uploader onChange={field.onChange} value={field.value}/>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )}
                             />
@@ -183,13 +206,13 @@ export default function CourseCreationPage() {
                                 <FormField
                                     control={form.control}
                                     name="category"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem className="w-full">
                                             <FormLabel>Category</FormLabel>
                                             <Select value={field.value} onValueChange={field.onChange}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full font-serif font-medium">
-                                                        <SelectValue placeholder="Select Category" />
+                                                        <SelectValue placeholder="Select Category"/>
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="font-serif font-medium">
@@ -200,7 +223,7 @@ export default function CourseCreationPage() {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -209,13 +232,13 @@ export default function CourseCreationPage() {
                                 <FormField
                                     control={form.control}
                                     name="level"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem className="w-full">
                                             <FormLabel>Level</FormLabel>
                                             <Select value={field.value} onValueChange={field.onChange}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full font-serif font-medium">
-                                                        <SelectValue placeholder="Select Level" />
+                                                        <SelectValue placeholder="Select Level"/>
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent className="font-serif font-medium">
@@ -226,7 +249,7 @@ export default function CourseCreationPage() {
                                                     ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -235,7 +258,7 @@ export default function CourseCreationPage() {
                                 <FormField
                                     control={form.control}
                                     name="duration"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem className="w-full">
                                             <FormLabel>Duration (hours)</FormLabel>
                                             <FormControl>
@@ -246,7 +269,7 @@ export default function CourseCreationPage() {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -255,7 +278,7 @@ export default function CourseCreationPage() {
                                 <FormField
                                     control={form.control}
                                     name="price"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem className="w-full">
                                             <FormLabel>Price (₹)</FormLabel>
                                             <FormControl>
@@ -266,7 +289,7 @@ export default function CourseCreationPage() {
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -276,13 +299,13 @@ export default function CourseCreationPage() {
                             <FormField
                                 control={form.control}
                                 name="status"
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Status</FormLabel>
                                         <Select value={field.value} onValueChange={field.onChange}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full font-serif font-medium">
-                                                    <SelectValue placeholder="Select Status" />
+                                                    <SelectValue placeholder="Select Status"/>
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent className="font-serif font-medium">
@@ -293,14 +316,23 @@ export default function CourseCreationPage() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )}
                             />
 
                             {/* Submit */}
-                            <Button className="font-mono font-medium">
-                                Create Course <PlusIcon className="ml-1 font-medium" size={16} />
+                            <Button type="submit" disabled={pending} className="font-mono font-medium">
+                                {pending ? (
+                                    <>
+                                        Creating...
+                                        <Loader2 className="animate-spin ml-1"/>
+                                    </>
+                                ) : (
+                                    <>
+                                        Create Course <PlusIcon className="ml-1 font-medium" size={16}/>
+                                    </>
+                                )}
                             </Button>
                         </form>
                     </Form>
