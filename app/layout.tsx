@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import React from "react";
-import {ThemeProvider} from "@/components/ui/theme-provider";
-import {Toaster} from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import {Cursor1} from "@/components/ui/cursor-1";
+
 
 
 const inter = Inter({
@@ -37,6 +39,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
       >
+          <Cursor1 />
+
           {children}
           <Toaster />
       </ThemeProvider>

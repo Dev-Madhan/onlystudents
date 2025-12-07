@@ -1,5 +1,6 @@
 import {ReactNode} from "react";
 import Navbar from "@/app/(people)/_components/Navbar";
+import {Cursor1} from "@/components/ui/cursor-1";
 
 export default function layoutPublic({children}: {children: ReactNode}) {
     return (

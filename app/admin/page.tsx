@@ -4,7 +4,7 @@ import {DataTable} from "@/components/sidebar/data-table";
 import data from "@/app/admin/data.json";
 import React from "react";
 
-export default function AdminIndexPage(){
+export default  function AdminIndexPage(){
     return(
         <>
             <SectionCards />

@@ -4,6 +4,7 @@ import {ArrowLeft} from "lucide-react";
 import {buttonVariants} from "@/components/ui/button";
 import Logo from "@/app/src/assets/images/Logo.png"
 import Image from "next/image";
+import {Cursor1} from "@/components/ui/cursor-1";
 
 export default function AuthLayout( { children } : { children: ReactNode } ) {
     return (
