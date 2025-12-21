@@ -1,233 +1,333 @@
 "use client";
 
-import { CSS } from '@dnd-kit/utilities';
+/* =========================================================
+   IMPORTS
+   ========================================================= */
+import { CSS } from "@dnd-kit/utilities";
 import {
-    DndContext,
-    KeyboardSensor,
-    PointerSensor,
-    rectIntersection,
-    useSensor,
-    useSensors,
-    DragEndEvent,
-    DraggableSyntheticListeners
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  rectIntersection,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DraggableSyntheticListeners,
 } from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { ReactNode, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    useSortable,
-    verticalListSortingStrategy
-} from "@dnd-kit/sortable";
-import { ReactNode, useState } from "react";
-import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course";
-import { cn } from "@/lib/utils";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, FileText, GripVertical, Trash2 } from "lucide-react";
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  GripVertical,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { toast } from "sonner";
 
+import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course";
+import {
+  reorderChapters,
+  reorderLessons,
+} from "@/app/admin/courses/[courseId]/edit/action";
+
+/* =========================================================
+   TYPES
+   ========================================================= */
 interface iAppProps {
-    data: AdminCourseSingularType;
+  data: AdminCourseSingularType;
 }
 
 interface SortableItemProps {
-    id: string;
-    children: (listeners: DraggableSyntheticListeners) => ReactNode
-    className?: string;
-    data?: {
-        type: "chapter" | "lesson";
-        chapterId?: string;
-    }
+  id: string;
+  children: (listeners: DraggableSyntheticListeners) => ReactNode;
+  className?: string;
+  data?: {
+    type: "chapter" | "lesson";
+    chapterId?: string;
+  };
 }
 
-// 1. Move SortableItem OUTSIDE the main component
-function SortableItem({ children, id, className, data }: SortableItemProps) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id: id, data: data });
+/* =========================================================
+   SORTABLE ITEM WRAPPER
+   ========================================================= */
+function SortableItem({
+  id,
+  children,
+  className,
+  data,
+}: SortableItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, data });
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
-
-    return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            className={cn("touch-none", className, isDragging ? "z-10" : "")}
-        >
-            {children(listeners)}
-        </div>
-    );
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      {...attributes}
+      className={cn("touch-none", isDragging && "z-10", className)}
+    >
+      {children(listeners)}
+    </div>
+  );
 }
 
+/* =========================================================
+   MAIN COMPONENT
+   ========================================================= */
 export function CourseStructure({ data }: iAppProps) {
-    const initialItems =
-        data.chapters.map((chapter) => ({
-            id: chapter.id,
-            title: chapter.title,
-            order: chapter.position,
-            isOpen: true, // default chapters to open
-            lessons: chapter.lessons.map((lesson) => ({
-                id: lesson.id,
-                title: lesson.title,
-                order: lesson.position,
-            })),
-        })) || [];
+  /* -------------------------------------------------------
+     INITIAL STATE
+     ------------------------------------------------------- */
+  const initialItems =
+    data.chapters.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      order: chapter.position,
+      isOpen: true,
+      lessons: chapter.lessons.map((lesson) => ({
+        id: lesson.id,
+        title: lesson.title,
+        order: lesson.position,
+      })),
+    })) || [];
 
-    // FIX: don't wrap in an extra array
-    const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState(initialItems);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
+  /* -------------------------------------------------------
+     SYNC WHEN DATA CHANGES
+     ------------------------------------------------------- */
+  useEffect(() => {
+    setItems((prev) =>
+      data.chapters.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        order: chapter.position,
+        isOpen: prev.find((c) => c.id === chapter.id)?.isOpen ?? true,
+        lessons: chapter.lessons.map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          order: lesson.position,
+        })),
+      }))
     );
+  }, [data]);
 
-    // 2. Fix the Closing Bracket Issue & index logic
-    function handleDragEnd(event: DragEndEvent) {
-        const { active, over } = event;
+  /* -------------------------------------------------------
+     DND SENSORS
+     ------------------------------------------------------- */
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-        if (!over || active.id === over.id) return;
+  /* =======================================================
+     DRAG END HANDLER
+     ======================================================= */
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-        setItems((items) => {
-            const oldIndex = items.findIndex((item) => item.id === active.id);
-            const newIndex = items.findIndex((item) => item.id === over.id);
+    const activeType = active.data.current?.type;
+    const overType = over.data.current?.type;
+    const courseId = data.id;
 
-            // If not a chapter drag, do nothing (prevents errors when dragging lessons)
-            if (oldIndex === -1 || newIndex === -1) {
-                return items;
-            }
+    /* ---------------- CHAPTER REORDER ---------------- */
+    if (activeType === "chapter" && overType === "chapter") {
+      const oldIndex = items.findIndex((c) => c.id === active.id);
+      const newIndex = items.findIndex((c) => c.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
 
-            return arrayMove(items, oldIndex, newIndex);
-        });
+      const reordered = arrayMove(items, oldIndex, newIndex);
+      const updated = reordered.map((c, i) => ({ ...c, order: i + 1 }));
+      const previous = [...items];
+
+      setItems(updated);
+
+      toast.promise(reorderChapters(courseId, updated.map(c => ({
+        id: c.id,
+        position: c.order,
+      }))), {
+        loading: "Reordering Chapters...",
+        success: (res) => {
+          if (res.status === "success") return res.message;
+          throw new Error(res.message);
+        },
+        error: () => {
+          setItems(previous);
+          return "Failed to reorder chapters.";
+        },
+      });
+
+      return;
     }
 
-    function toggleChapter(chapterId: string) {
-        setItems(
-            items.map((chapter) =>
-                chapter.id === chapterId ? { ...chapter, isOpen: !chapter.isOpen } : chapter
-            )
-        );
+    /* ---------------- LESSON REORDER ---------------- */
+    if (activeType === "lesson" && overType === "lesson") {
+      const chapterId = active.data.current?.chapterId;
+      if (!chapterId) return;
+
+      const chapterIndex = items.findIndex((c) => c.id === chapterId);
+      if (chapterIndex === -1) return;
+
+      const chapter = items[chapterIndex];
+      const oldIndex = chapter.lessons.findIndex(l => l.id === active.id);
+      const newIndex = chapter.lessons.findIndex(l => l.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const reorderedLessons = arrayMove(chapter.lessons, oldIndex, newIndex);
+      const updatedLessons = reorderedLessons.map((l, i) => ({
+        ...l,
+        order: i + 1,
+      }));
+
+      const previous = [...items];
+      const newItems = [...items];
+      newItems[chapterIndex] = { ...chapter, lessons: updatedLessons };
+      setItems(newItems);
+
+      toast.promise(
+        reorderLessons(
+          chapterId,
+          updatedLessons.map(l => ({ id: l.id, position: l.order })),
+          courseId
+        ),
+        {
+          loading: "Reordering Lessons...",
+          success: (res) => {
+            if (res.status === "success") return res.message;
+            throw new Error(res.message);
+          },
+          error: () => {
+            setItems(previous);
+            return "Failed to reorder lessons.";
+          },
+        }
+      );
     }
+  }
 
-    return (
-        <DndContext
-            collisionDetection={rectIntersection}
-            onDragEnd={handleDragEnd}
-            sensors={sensors}
-        >
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between border-b border-border">
-                    <CardTitle>Chapters</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6">
-                    {/* FIX: pass IDs to SortableContext */}
-                    <SortableContext
-                        items={items.map((item) => item.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        {items.map((item) => (
-                            <SortableItem id={item.id} data={{ type: "chapter" }} key={item.id}>
-                                {(listeners) => (
-                                    <Card>
-                                        <Collapsible
-                                            open={item.isOpen}
-                                            onOpenChange={() => toggleChapter(item.id)}
-                                        >
-                                            <div className="flex items-center justify-between p-3 border-b border-border">
-                                                <div className="flex items-center gap-2">
-                                                    <Button size="icon" variant="ghost" {...listeners}>
-                                                        <GripVertical className="size-4" />
-                                                    </Button>
-                                                    <CollapsibleTrigger asChild>
-                                                        <Button
-                                                            size="icon"
-                                                            variant="ghost"
-                                                            className="flex items-center"
-                                                        >
-                                                            {item.isOpen ? (
-                                                                <ChevronDown className="size-4" />
-                                                            ) : (
-                                                                <ChevronRight className="size-4" />
-                                                            )}
-                                                        </Button>
-                                                    </CollapsibleTrigger>
+  /* -------------------------------------------------------
+     TOGGLE CHAPTER
+     ------------------------------------------------------- */
+  function toggleChapter(id: string) {
+    setItems((prev) =>
+      prev.map((c) =>
+        c.id === id ? { ...c, isOpen: !c.isOpen } : c
+      )
+    );
+  }
 
-                                                    <p className="cursor-pointer hover:text-primary pl-2">
-                                                        {item.title}
-                                                    </p>
-                                                </div>
+  /* =======================================================
+     UI
+     ======================================================= */
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={rectIntersection}
+      onDragEnd={handleDragEnd}
+    >
+      <Card>
+        <CardHeader className="border-b">
+          <CardTitle>Chapters</CardTitle>
+        </CardHeader>
 
-                                                <Button size="icon" variant="outline">
-                                                    <Trash2 className="size-4" />
-                                                </Button>
-                                            </div>
+        <CardContent className="pt-6 space-y-6">
+          <SortableContext items={items.map(c => c.id)} strategy={verticalListSortingStrategy}>
+            {items.map((chapter) => (
+              <SortableItem key={chapter.id} id={chapter.id} data={{ type: "chapter" }}>
+                {(listeners) => (
+                  <Card>
+                    <Collapsible open={chapter.isOpen} onOpenChange={() => toggleChapter(chapter.id)}>
+                      {/* Chapter Header */}
+                      <div className="flex items-center justify-between p-3 border-b">
+                        <div className="flex items-center gap-2">
+                          <Button size="icon" variant="ghost" {...listeners}>
+                            <GripVertical className="size-4" />
+                          </Button>
+                          <CollapsibleTrigger asChild>
+                            <Button size="icon" variant="ghost">
+                              {chapter.isOpen ? <ChevronDown /> : <ChevronRight />}
+                            </Button>
+                          </CollapsibleTrigger>
+                          <p className="pl-2 font-medium">{chapter.title}</p>
+                        </div>
+                        <Button size="icon" variant="outline">
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
 
-                                            <CollapsibleContent>
-                                                <div className="p-1">
-                                                    <SortableContext
-                                                        items={item.lessons.map((lesson) => lesson.id)}
-                                                        strategy={verticalListSortingStrategy}
-                                                    >
-                                                        {item.lessons.map((lesson) => (
-                                                            <SortableItem
-                                                                id={lesson.id}
-                                                                key={lesson.id}
-                                                                data={{
-                                                                    type: "lesson",
-                                                                    chapterId: item.id,
-                                                                }}
-                                                            >
-                                                                {(lessonListeners) => (
-                                                                    <div className="flex items-center justify-between p-2 hover:bg-accent rounded-sm">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                {...lessonListeners}
-                                                                            >
-                                                                                <GripVertical className="size-4" />
-                                                                            </Button>
-                                                                            <FileText className="size-4" />
-                                                                            <Link
-                                                                                href={`/admin/courses/${data.id}/${item.id}/${lesson.id}`}
-                                                                            >
-                                                                                {lesson.title}
-                                                                            </Link>
-                                                                        </div>
-                                                                        <Button variant="outline" size="icon">
-                                                                            <Trash2 className="size-4" />
-                                                                        </Button>
-                                                                    </div>
-                                                                )}
-                                                            </SortableItem>
-                                                        ))}
-                                                    </SortableContext>
-                                                    <div className="p-2">
-                                                        <Button variant="outline" className="w-full">
-                                                            Create New Lesson
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </CollapsibleContent>
-                                        </Collapsible>
-                                    </Card>
+                      {/* Lessons */}
+                      <CollapsibleContent>
+                        <div className="p-1 space-y-2">
+                          <SortableContext
+                            items={chapter.lessons.map(l => l.id)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            {chapter.lessons.map((lesson) => (
+                              <SortableItem
+                                key={lesson.id}
+                                id={lesson.id}
+                                data={{ type: "lesson", chapterId: chapter.id }}
+                              >
+                                {(lessonListeners) => (
+                                  <div className="flex items-center justify-between p-2 hover:bg-accent rounded">
+                                    <div className="flex items-center gap-2">
+                                      <Button size="icon" variant="ghost" {...lessonListeners}>
+                                        <GripVertical className="size-4" />
+                                      </Button>
+                                      <FileText className="size-4" />
+                                      <Link
+                                        href={`/admin/courses/${data.id}/${chapter.id}/${lesson.id}`}
+                                      >
+                                        {lesson.title}
+                                      </Link>
+                                    </div>
+                                    <Button size="icon" variant="outline">
+                                      <Trash2 className="size-4" />
+                                    </Button>
+                                  </div>
                                 )}
-                            </SortableItem>
-                        ))}
-                    </SortableContext>
-                </CardContent>
-            </Card>
-        </DndContext>
-    );
+                              </SortableItem>
+                            ))}
+                          </SortableContext>
+
+                          <Button variant="outline" className="w-full">
+                            Create New Lesson
+                          </Button>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </Card>
+                )}
+              </SortableItem>
+            ))}
+          </SortableContext>
+        </CardContent>
+      </Card>
+    </DndContext>
+  );
 }

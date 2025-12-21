@@ -42,7 +42,7 @@ export default function RootLayout({
           <Cursor1 />
 
           {children}
-          <Toaster />
+          <Toaster closeButton position="bottom-right" />
       </ThemeProvider>
       </body>
     </html>
