@@ -2,7 +2,6 @@ import React, {ReactNode} from "react";
 import {AppSidebar} from "@/components/sidebar/app-sidebar";
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {SiteHeader} from "@/components/sidebar/site-header";
-import {Cursor1} from "@/components/ui/cursor-1";
 
 export default function AdminLayout({children}: { children: ReactNode }) {
     return (
