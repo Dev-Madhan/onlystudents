@@ -77,12 +77,14 @@ export async function editCourse(
 }
 
 /* =========================================================
-   REORDER LESSONS
+   REORDER LESSONS (✅ FIXED SIGNATURE)
    ========================================================= */
 export async function reorderLessons(
-    lessons: { id: string; position: number }[],
-  courseId: string
+  chapterId: string,
+  lessons: { id: string; position: number }[]
 ): Promise<ApiResponse> {
+  await requireAdmin();
+
   try {
     if (!lessons.length) {
       return { status: "error", message: "No lessons provided" };
@@ -92,14 +94,20 @@ export async function reorderLessons(
       lessons.map((lesson) =>
         prisma.lesson.update({
           where: { id: lesson.id },
-          data: { position: lesson.position },
+          data: {
+            position: lesson.position,
+            chapterId,
+          },
         })
       )
     );
 
-    revalidatePath(`/admin/courses/${courseId}/edit`);
+    revalidatePath(`/admin/courses`);
 
-    return { status: "success", message: "Lessons reordered successfully" };
+    return {
+      status: "success",
+      message: "Lessons reordered successfully",
+    };
   } catch {
     return { status: "error", message: "Failed to reorder lessons" };
   }
