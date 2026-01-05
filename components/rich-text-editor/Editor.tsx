@@ -6,58 +6,56 @@ import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { Menubar } from "@/components/rich-text-editor/Menubar";
 
-/**
- * Props for the Rich Text Editor.
- *
- * `field` is the object you get from a form library (e.g. React Hook Form).
- * It must contain:
- *   - `value`: string (JSON-serialized editor content)
- *   - `onChange`: (value: string) => void
- */
 interface RichTextEditorProps {
-    field: {
-        value?: string;
-        onChange: (value: string) => void;
-    };
+  field: {
+    value?: string;
+    onChange: (value: string) => void;
+  };
 }
 
 export function RichTextEditor({ field }: RichTextEditorProps) {
-    const [mounted, setMounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-    // Mark component as mounted on the client – avoids SSR hydration mismatches
-    useEffect(() => setMounted(true), []);
+  useEffect(() => setMounted(true), []);
 
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            TextAlign.configure({ types: ["heading", "paragraph"] }),
-        ],
-        editorProps: {
-            attributes: {
-                class:
-                    "min-h-[300px] p-4 focus:outline-none font-serif prose prose-sm sm:prose lg:prose-lg xl:prose-xl dark:prose-invert !w-full !max-w-none",
-            },
-        },
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ],
 
-        // Tiptap renders the editor only on the client
-        immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        // TAILWIND v4 EXPLANATION:
+        // 'prose': Enables the typography styles.
+        // 'prose-sm': Sets a professional size scale.
+        // 'max-w-none': Prevents text constraint.
+        // 'dark:prose-invert': Auto-adjusts colors for dark mode.
+        // 'focus:outline-none': Removes default browser focus ring.
+        class:
+          "min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none dark:prose-invert",
+      },
+    },
 
-        // Persist changes back to the form field
-        onUpdate: ({ editor }) => {
-            field.onChange(JSON.stringify(editor.getJSON()));
-        },
+    immediatelyRender: false,
 
-        // Initial content – fallback to a friendly default
-        content: field.value ? JSON.parse(field.value) : "<p>Hello World</p>",
-    });
+    onUpdate: ({ editor }) => {
+      field.onChange(JSON.stringify(editor.getJSON()));
+    },
 
-    // While the component is mounting or the editor is still initializing, render nothing.
-    if (!mounted || !editor) return null;
+    content: field.value ? JSON.parse(field.value) : "<p>Hello World</p>",
+  });
 
-    return (
-        <div className="w-full border-2 border-input rounded-lg overflow-hidden dark:bg-input/30">
-            <Menubar editor={editor} />
-            <EditorContent editor={editor} />
-        </div>
-    );
+  if (!mounted || !editor) return null;
+
+  return (
+    <div className="w-full border-2 border-input rounded-lg overflow-hidden bg-card dark:bg-input/30">
+      <Menubar editor={editor} />
+      <EditorContent editor={editor} />
+    </div>
+  );
 }

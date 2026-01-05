@@ -2,6 +2,7 @@ import {requireAdmin} from "@/app/data/admin/require-admin";
 import {prisma} from "@/lib/db";
 
 export async function adminGetCourses() {
+    // await new Promise(resolve => setTimeout(resolve, 2000));
     await requireAdmin();
 
     const data = await prisma.course.findMany({
