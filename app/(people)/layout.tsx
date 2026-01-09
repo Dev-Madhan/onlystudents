@@ -1,12 +1,24 @@
-import {ReactNode} from "react";
+import { ReactNode } from "react";
 import Navbar from "@/app/(people)/_components/Navbar";
+import FooterSection from "@/components/tailark/footer";
 
-
-export default function layoutPublic({children}: {children: ReactNode}) {
+export default function LayoutPublic({
+    children,
+}: {
+    children: ReactNode;
+}) {
     return (
-        <div>
+        <div className="min-h-screen flex flex-col">
+            {/* Navbar */}
             <Navbar />
-            <main className="container mx-auto px-4 md:px-6 lg:px-8 mb-32 ">{children}</main>
+
+            {/* Main Content */}
+            <main className="flex-1 w-full px-4 sm:px-6 lg:px-8">
+                {children}
+            </main>
+
+            {/* Footer */}
+            <FooterSection />
         </div>
     );
-};
+}
