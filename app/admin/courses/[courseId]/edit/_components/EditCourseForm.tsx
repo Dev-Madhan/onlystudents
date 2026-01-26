@@ -20,7 +20,7 @@ import {
   CourseSchemaType,
   courseStatus,
 } from "@/lib/zodSchema";
-import { Control, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -38,150 +38,32 @@ import { useRouter } from "next/navigation";
 import { editCourse } from "@/app/admin/courses/[courseId]/edit/action";
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course";
 
-/* -------------------------------------------------------------------------- */
-/*                                    TYPES                                   */
-/* -------------------------------------------------------------------------- */
+/* =========================================================
+   PROPS
+   ========================================================= */
 
-interface iAppProps {
+interface EditCourseFormProps {
   data: AdminCourseSingularType;
 }
 
-type ServerActionResult =
-  | { status: "success"; message: string }
-  | { status: "error"; message: string };
+/* =========================================================
+   COMPONENT
+   ========================================================= */
 
-/* -------------------------------------------------------------------------- */
-/*                          SERVER RESPONSE HANDLER                            */
-/* -------------------------------------------------------------------------- */
-
-function processServerResponse(
-  result: ServerActionResult | null,
-  error: unknown,
-  onSuccess: () => void
-) {
-  if (error) {
-    toast.error("An unexpected error occurred. Please try again.");
-    return;
-  }
-
-  if (result?.status === "success") {
-    toast.success(result.message);
-    onSuccess();
-  } else if (result?.status === "error") {
-    toast.error(result.message);
-  }
-}
-
-/* -------------------------------------------------------------------------- */
-/*                              REUSABLE INPUT                                */
-/* -------------------------------------------------------------------------- */
-
-interface FormInputProps {
-  control: Control<CourseSchemaType>;
-  name: keyof CourseSchemaType;
-  label: string;
-  placeholder: string;
-  type?: "text" | "number";
-  className?: string;
-}
-
-const FormInput = ({
-  control,
-  name,
-  label,
-  placeholder,
-  type = "text",
-  className,
-}: FormInputProps) => (
-  <FormField
-    control={control}
-    name={name}
-    render={({ field }) => (
-      <FormItem className={className}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <Input
-            {...field}
-            type={type}
-            placeholder={placeholder}
-            className="font-medium font-serif text-sm"
-            value={type === "number" ? field.value ?? "" : field.value}
-            onChange={(e) => {
-              const value =
-                type === "number" ? Number(e.target.value) : e.target.value;
-              field.onChange(value);
-            }}
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-/* -------------------------------------------------------------------------- */
-/*                              REUSABLE SELECT                               */
-/* -------------------------------------------------------------------------- */
-
-interface FormSelectProps {
-  control: Control<CourseSchemaType>;
-  name: keyof CourseSchemaType;
-  label: string;
-  placeholder: string;
-  options: readonly string[];
-}
-
-const FormSelect = ({
-  control,
-  name,
-  label,
-  placeholder,
-  options,
-}: FormSelectProps) => (
-  <FormField
-    control={control}
-    name={name}
-    render={({ field }) => (
-      <FormItem className="w-full">
-        <FormLabel>{label}</FormLabel>
-        <Select value={field.value as string} onValueChange={field.onChange}>
-          <FormControl>
-            <SelectTrigger className="w-full font-serif font-medium">
-              <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-          </FormControl>
-          <SelectContent className="font-serif font-medium">
-            {options.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-/* -------------------------------------------------------------------------- */
-/*                              MAIN COMPONENT                                */
-/* -------------------------------------------------------------------------- */
-
-export function EditCourseForm({ data }: iAppProps) {
+export function EditCourseForm({ data }: EditCourseFormProps) {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     mode: "onSubmit",
-    shouldUnregister: false,
     defaultValues: {
       title: data.title,
       description: data.description,
       smallDescription: data.smallDescription,
       slug: data.slug,
       fileKey: data.fileKey,
+      demoVideoKey: data.demoVideoKey ?? "",
       price: data.price,
       duration: data.duration,
       level: data.level,
@@ -193,17 +75,20 @@ export function EditCourseForm({ data }: iAppProps) {
   function onSubmit(values: CourseSchemaType) {
     startTransition(async () => {
       const { data: result, error } = await tryCatch(
-        editCourse(values, data.id)
+        editCourse(values, data.id),
       );
 
-      processServerResponse(
-        (result ?? null) as ServerActionResult | null,
-        error,
-        () => {
-          form.reset();
-          router.push("/admin/courses");
-        }
-      );
+      if (error) {
+        toast.error("Something went wrong");
+        return;
+      }
+
+      if (result?.status === "success") {
+        toast.success(result.message);
+        router.push("/admin/courses");
+      } else {
+        toast.error(result?.message ?? "Update failed");
+      }
     });
   }
 
@@ -211,40 +96,47 @@ export function EditCourseForm({ data }: iAppProps) {
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         {/* TITLE */}
-        <FormInput
+        <FormField
           control={form.control}
           name="title"
-          label="Title"
-          placeholder="Course title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         {/* SLUG */}
         <div className="flex gap-4 items-end">
-          <FormInput
+          <FormField
             control={form.control}
             name="slug"
-            label="Slug"
-            placeholder="course-slug"
-            className="w-full"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Slug</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           <Button
             type="button"
-            className="font-mono font-medium"
             onClick={() => {
               const title = form.getValues("title").trim();
-              if (!title) {
-                form.setError("title", {
-                  message: "Enter title before generating slug",
-                });
-                return;
-              }
-              const slug = slugify(title, {
-                lower: true,
-                strict: true,
-                trim: true,
-              });
-              form.setValue("slug", slug, { shouldValidate: true });
+              if (!title) return;
+
+              form.setValue(
+                "slug",
+                slugify(title, { lower: true, strict: true }),
+                { shouldValidate: true },
+              );
             }}
           >
             Generate <SparkleIcon className="ml-1" size={16} />
@@ -259,11 +151,7 @@ export function EditCourseForm({ data }: iAppProps) {
             <FormItem>
               <FormLabel>Small Description</FormLabel>
               <FormControl>
-                <Textarea
-                  {...field}
-                  placeholder="Short description"
-                  className="min-h-[120px] font-serif font-medium"
-                />
+                <Textarea {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -296,10 +184,7 @@ export function EditCourseForm({ data }: iAppProps) {
                 <Uploader
                   fileTypeAccepted="image"
                   value={field.value}
-                  onChange={(value) => {
-                    field.onChange(value);
-                    void form.trigger("fileKey"); // ✅ FIXED (no promise warning)
-                  }}
+                  onChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
@@ -307,63 +192,115 @@ export function EditCourseForm({ data }: iAppProps) {
           )}
         />
 
-        {/* GRID */}
+        {/* DEMO VIDEO */}
+        <FormField
+          control={form.control}
+          name="demoVideoKey"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Demo Video / Preview Video</FormLabel>
+              <FormControl>
+                <Uploader
+                  fileTypeAccepted="demoVideo"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* CATEGORY / LEVEL */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormSelect
+          {/* CATEGORY */}
+          <FormField
             control={form.control}
             name="category"
-            label="Category"
-            placeholder="Select category"
-            options={courseCategories}
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Category</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger className="w-full font-medium font-mono">
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="font-medium font-mono">
+                    {courseCategories.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
-          <FormSelect
+          {/* LEVEL */}
+          <FormField
             control={form.control}
             name="level"
-            label="Level"
-            placeholder="Select level"
-            options={courseLevels}
-          />
-
-          <FormInput
-            control={form.control}
-            name="duration"
-            label="Duration (hours)"
-            placeholder="Duration"
-            type="number"
-          />
-
-          <FormInput
-            control={form.control}
-            name="price"
-            label="Price (₹)"
-            placeholder="Price"
-            type="number"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Level</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl className="font-medium font-mono">
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Level" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="font-medium font-mono">
+                    {courseLevels.map((l) => (
+                      <SelectItem key={l} value={l}>
+                        {l}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 
         {/* STATUS */}
-        <FormSelect
+        <FormField
           control={form.control}
           name="status"
-          label="Status"
-          placeholder="Select status"
-          options={courseStatus}
+          render={({ field }) => (
+            <FormItem className="w-full">
+              <FormLabel>Status</FormLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger className="w-full font-medium font-mono">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="font-medium font-mono">
+                  {courseStatus.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         {/* SUBMIT */}
-        <Button
-          type="submit"
-          disabled={pending || !form.watch("fileKey")}
-          className="font-mono font-medium"
-        >
+        <Button type="submit" disabled={pending}>
           {pending ? (
             <>
               Updating <Loader2 className="ml-1 animate-spin" />
             </>
           ) : (
             <>
-              Update Course <PlusIcon className="ml-1" size={16} />
+              Update Course <PlusIcon className="ml-1" />
             </>
           )}
         </Button>

@@ -5,9 +5,7 @@ import {env} from "@/lib/env";
 import {v4 as uuidv4} from "uuid";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 import {S3} from "@/lib/S3Client";
-import arcjet, {detectBot, fixedWindow} from "@/lib/arcjet";
-import {headers} from "next/headers";
-import {auth} from "@/lib/auth";
+import arcjet, {fixedWindow} from "@/lib/arcjet";
 import {requireAdmin} from "@/app/data/admin/require-admin";
 
 // 👇 REMOVED 'export' keyword here
@@ -19,11 +17,6 @@ const fileUploadSchema = z.object({
 });
 
 const aj = arcjet.withRule(
-    detectBot({
-        mode: "LIVE",
-        allow: [],
-    })
-).withRule(
     fixedWindow({
         mode: "LIVE",
         window: "1m",
@@ -73,7 +66,7 @@ export async function POST(request: Request) {
             expiresIn: 360, // 6 minutes
         });
 
-        // Send correct response object
+        // Send a correct response object
         return NextResponse.json({
             presignedUrl,
             key: uniqueKey,

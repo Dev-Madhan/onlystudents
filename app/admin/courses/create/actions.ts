@@ -4,88 +4,114 @@ import { courseSchema, CourseSchemaType } from "@/lib/zodSchema";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/types";
 import { requireAdmin } from "@/app/data/admin/require-admin";
-import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 
+/* =========================================================
+   ARCJET CONFIG
+   ========================================================= */
+
 const aj = arcjet.withRule(
-    detectBot({
-        mode: "LIVE",
-        allow: [],
-    })
-).withRule(
-    fixedWindow({
-        mode: "LIVE",
-        window: "1m",
-        max: 5,
-    })
+  fixedWindow({
+    mode: "LIVE",
+    window: "1m",
+    max: 5,
+  })
 );
 
-export async function CreateCourse(data: CourseSchemaType): Promise<ApiResponse> {
-    const session = await requireAdmin();
+/* =========================================================
+   CREATE COURSE
+   ========================================================= */
 
-    try {
-        const req = await request();
-        const decision = await aj.protect(req, {
-            fingerprint: session.user.id,
-        });
+export async function CreateCourse(
+  data: CourseSchemaType
+): Promise<ApiResponse> {
+  const session = await requireAdmin();
 
-        // FIX 1: specific Arcjet denial handling
-        if (decision.isDenied()) {
-            if (decision.reason.isRateLimit()) {
-                return {
-                    status: "error",
-                    message: "You have been blocked due to rate limiting",
-                };
-            }
-            if (decision.reason.isBot()) {
-                return {
-                    status: "error",
-                    message: "You are bot! if this is a mistake contact our support",
-                };
-            }
-            // General fallback for denial
-            return {
-                status: "error",
-                message: "Access Denied",
-            };
-        }
+  try {
+    /* ---------------- ARCJET PROTECTION ---------------- */
 
-        // FIX 2: Logic Flow. Removed the 'else' block that forced an error on valid users.
-        if (!session || !session.user) {
-            return {
-                status: "error",
-                message: "Unauthorized",
-            };
-        }
+    const req = await request();
+    const decision = await aj.protect(req, {
+      fingerprint: session.user.id,
+    });
 
-        // 3. Validation
-        const validation = courseSchema.safeParse(data);
-
-        if (!validation.success) {
-            return {
-                status: "error",
-                message: "Invalid Form Data",
-            };
-        }
-
-        // 4. Database Creation
-        await prisma.course.create({
-            data: {
-                ...validation.data,
-                userId: session.user.id,
-            },
-        });
-
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
         return {
-            status: "success",
-            message: "Course Created Successfully",
+          status: "error",
+          message: "Too many requests. Please try again later.",
         };
+      }
 
-    } catch (error) {
-        console.error("Course creation error:", error);
+      if (decision.reason.isBot()) {
         return {
-            status: "error",
-            message: "Failed to create course",
+          status: "error",
+          message:
+            "Automated activity detected. If this is a mistake, contact support.",
         };
+      }
+
+      return {
+        status: "error",
+        message: "Access denied.",
+      };
     }
+
+    /* ---------------- VALIDATION ---------------- */
+
+    const parsed = courseSchema.safeParse(data);
+
+    if (!parsed.success) {
+      return {
+        status: "error",
+        message: "Invalid course data.",
+      };
+    }
+
+    const {
+      title,
+      description,
+      fileKey,
+      demoVideoKey,
+      price,
+      duration,
+      level,
+      category,
+      smallDescription,
+      slug,
+      status,
+    } = parsed.data;
+
+    /* ---------------- DATABASE ---------------- */
+
+    await prisma.course.create({
+      data: {
+        title,
+        description,
+        fileKey,
+        demoVideoKey, // ✅ optional, safe
+        price,
+        duration,
+        level,
+        category,
+        smallDescription,
+        slug,
+        status,
+        userId: session.user.id,
+      },
+    });
+
+    return {
+      status: "success",
+      message: "Course created successfully.",
+    };
+  } catch (error) {
+    console.error("CreateCourse error:", error);
+
+    return {
+      status: "error",
+      message: "Failed to create course.",
+    };
+  }
 }

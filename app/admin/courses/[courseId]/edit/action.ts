@@ -11,21 +11,14 @@ import {
   LessonSchemaType,
 } from "@/lib/zodSchema";
 import { prisma } from "@/lib/db";
-import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import arcjet, {fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
 /* =========================================================
    ARCJET CONFIG
    ========================================================= */
-const aj = arcjet
-  .withRule(
-    detectBot({
-      mode: "LIVE",
-      allow: [],
-    })
-  )
-  .withRule(
+const aj = arcjet.withRule(
     fixedWindow({
       mode: "LIVE",
       window: "1m",

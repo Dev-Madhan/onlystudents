@@ -3,51 +3,63 @@ import { requireAdmin } from "@/app/data/admin/require-admin";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 
-export async function adminGetCourse(id: string) {
-    await requireAdmin();
+/* =========================================================
+   GET SINGLE COURSE (ADMIN)
+   ========================================================= */
 
-    const data = await prisma.course.findUnique({
-        where: {
-            id: id,
-        },
+export async function adminGetCourse(courseId: string) {
+  await requireAdmin();
+
+  const data = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      smallDescription: true,
+      slug: true,
+
+      fileKey: true,
+      demoVideoKey: true, // ✅ FIXED: demo video support
+
+      price: true,
+      duration: true,
+      level: true,
+      category: true,
+      status: true,
+
+      chapters: {
+        orderBy: { position: "asc" },
         select: {
-            id: true,
-            title: true,
-            description: true,
-            smallDescription: true,
-            duration: true,
-            level: true,
-            status: true,
-            price: true,
-            fileKey: true,
-            slug: true,
-            category: true,
-            // FIXED: Changed "chapter" to "chapters" to match your schema
-            chapters: {
-                select: {
-                    id: true,
-                    title: true,
-                    position: true,
-                    lessons: {
-                        select: {
-                            id: true,
-                            title: true,
-                            description: true,
-                            thumbnailKey: true,
-                            position: true,
-                            videoKey: true,
-                        },
-                    },
-                },
+          id: true,
+          title: true,
+          position: true,
+          lessons: {
+            orderBy: { position: "asc" },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              thumbnailKey: true,
+              videoKey: true,
+              position: true,
             },
+          },
         },
-    });
+      },
+    },
+  });
 
-    if (!data) {
-        return notFound();
-    }
+  if (!data) {
+    notFound();
+  }
 
-    return data;
+  return data;
 }
 
-export type AdminCourseSingularType = Awaited<ReturnType<typeof adminGetCourse>>;
+/* =========================================================
+   TYPES
+   ========================================================= */
+
+export type AdminCourseSingularType =
+  Awaited<ReturnType<typeof adminGetCourse>>;

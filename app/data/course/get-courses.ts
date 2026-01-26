@@ -1,45 +1,51 @@
-import {prisma} from "@/lib/db";
-import {notFound} from "next/navigation";
+import { prisma } from "@/lib/db";
+import { notFound } from "next/navigation";
 
 export async function getInduvidualCourses(slug: string) {
-    const course = await prisma.course.findUnique({
-        where: {
-            slug: slug,
+  const course = await prisma.course.findUnique({
+    where: {
+      slug,
+    },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+
+      fileKey: true,
+
+      // ✅ FIX: include demo video key
+      demoVideoKey: true,
+
+      price: true,
+      duration: true,
+      level: true,
+      category: true,
+      smallDescription: true,
+
+      chapters: {
+        orderBy: {
+          position: "asc",
         },
         select: {
-            id: true,
-            title: true,
-            description: true,
-            fileKey: true,
-            price: true,
-            duration: true,
-            level: true,
-            category: true,
-            smallDescription: true,
-            chapters: {
-                select:{
-                    id: true,
-                    title: true,
-                    lessons: {
-                        select: {
-                            id: true,
-                            title: true,
-                        },
-                        orderBy:{
-                            position: "asc",
-                        },
-                    },
-                },
-                orderBy: {
-                    position: "asc",
-                },
+          id: true,
+          title: true,
+          lessons: {
+            orderBy: {
+              position: "asc",
             },
+            select: {
+              id: true,
+              title: true,
+            },
+          },
         },
-    });
+      },
+    },
+  });
 
-    if(!course){
-        return notFound();
-    }
+  if (!course) {
+    notFound();
+  }
 
-    return course;
+  return course;
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { FileRejection, useDropzone } from "react-dropzone";
-import { useCallback, useEffect, useState } from "react";
+import {useDropzone } from "react-dropzone";
+import { useCallback, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -18,6 +18,11 @@ import { useConstructUrl } from "@/hooks/use-construct-url";
    TYPES
    ========================================================= */
 
+type FileTypeAccepted = "image" | "video" | "demoVideo";
+
+/** What RenderUploadedState actually understands */
+type RenderFileType = "image" | "video";
+
 interface UploaderState {
   id: string | null;
   file: File | null;
@@ -27,14 +32,32 @@ interface UploaderState {
   isDeleting: boolean;
   error: boolean;
   objectUrl?: string;
-  fileType: "image" | "video";
+  fileType: FileTypeAccepted;
 }
 
 interface UploaderProps {
   value?: string;
   onChange?: (value: string) => void;
-  fileTypeAccepted?: "image" | "video";
+  fileTypeAccepted?: FileTypeAccepted;
 }
+
+/* =========================================================
+   CONSTANTS
+   ========================================================= */
+
+const MAX_SIZES: Record<FileTypeAccepted, number> = {
+  image: 5 * 1024 * 1024, // 5MB
+  video: 5 * 1024 * 1024 * 1024, // 5GB
+  demoVideo: 2 * 1024 * 1024 * 1024, // 2GB
+};
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+/** Map demoVideo → video for preview components */
+const toRenderFileType = (type: FileTypeAccepted): RenderFileType =>
+  type === "image" ? "image" : "video";
 
 /* =========================================================
    COMPONENT
@@ -85,11 +108,7 @@ export default function Uploader({
 
       if (!response.ok) {
         toast.error("Failed to get upload URL");
-        setFileState((prev) => ({
-          ...prev,
-          uploading: false,
-          error: true,
-        }));
+        setFileState((prev) => ({ ...prev, uploading: false, error: true }));
         return;
       }
 
@@ -100,11 +119,7 @@ export default function Uploader({
 
       if (!presignedUrl || !key) {
         toast.error("Invalid upload response");
-        setFileState((prev) => ({
-          ...prev,
-          uploading: false,
-          error: true,
-        }));
+        setFileState((prev) => ({ ...prev, uploading: false, error: true }));
         return;
       }
 
@@ -132,22 +147,14 @@ export default function Uploader({
             toast.success("File uploaded successfully");
           } else {
             toast.error("Upload failed");
-            setFileState((prev) => ({
-              ...prev,
-              uploading: false,
-              error: true,
-            }));
+            setFileState((prev) => ({ ...prev, uploading: false, error: true }));
           }
           resolve();
         };
 
         xhr.onerror = () => {
           toast.error("Upload error");
-          setFileState((prev) => ({
-            ...prev,
-            uploading: false,
-            error: true,
-          }));
+          setFileState((prev) => ({ ...prev, uploading: false, error: true }));
           resolve();
         };
 
@@ -160,7 +167,7 @@ export default function Uploader({
   );
 
   /* =========================================================
-     DROP (PROMISE HANDLED)
+     DROP
      ========================================================= */
 
   const onDrop = useCallback(
@@ -185,7 +192,6 @@ export default function Uploader({
         fileType: fileTypeAccepted,
       });
 
-      // ✅ Promise is properly awaited
       await uploadFile(file);
     },
     [fileState.objectUrl, uploadFile, fileTypeAccepted]
@@ -208,11 +214,7 @@ export default function Uploader({
 
     if (!response.ok) {
       toast.error("Failed to remove file");
-      setFileState((prev) => ({
-        ...prev,
-        isDeleting: false,
-        error: true,
-      }));
+      setFileState((prev) => ({ ...prev, isDeleting: false, error: true }));
       return;
     }
 
@@ -237,48 +239,17 @@ export default function Uploader({
   };
 
   /* =========================================================
-     REJECTED FILES
-     ========================================================= */
-
-  const rejectedFiles = (rejections: FileRejection[]) => {
-    for (const rejection of rejections) {
-      for (const error of rejection.errors) {
-        if (error.code === "file-too-large") {
-          toast.error("Max file size is 5MB");
-        }
-        if (error.code === "too-many-files") {
-          toast.error("Only one file allowed");
-        }
-      }
-    }
-  };
-
-  /* =========================================================
-     CLEANUP
-     ========================================================= */
-
-  useEffect(() => {
-    return () => {
-      if (fileState.objectUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(fileState.objectUrl);
-      }
-    };
-  }, [fileState.objectUrl]);
-
-  /* =========================================================
      DROPZONE
      ========================================================= */
 
+  const isVideo =
+    fileTypeAccepted === "video" || fileTypeAccepted === "demoVideo";
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    onDropRejected: rejectedFiles,
-    accept:
-      fileTypeAccepted === "video"
-        ? { "video/*": [] }
-        : { "image/*": [] },
+    accept: isVideo ? { "video/*": [] } : { "image/*": [] },
     maxFiles: 1,
-    multiple: false,
-    maxSize: fileTypeAccepted === "image" ? 5 * 1024 * 1024 : 5000 * 1024 * 1024,
+    maxSize: MAX_SIZES[fileTypeAccepted],
     disabled: fileState.uploading || fileState.isDeleting,
   });
 
@@ -304,7 +275,7 @@ export default function Uploader({
           previewUrl={fileState.objectUrl}
           isDeleting={fileState.isDeleting}
           handleRemoveFile={handleRemoveFile}
-          fileType={fileState.fileType}
+          fileType={toRenderFileType(fileState.fileType)} // ✅ FIX
         />
       );
     }
