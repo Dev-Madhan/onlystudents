@@ -9,6 +9,9 @@ import {resend} from "@/lib/resend";
 import {admin} from "better-auth/plugins"
 
 export const auth = betterAuth({
+    baseURL: env.BETTER_AUTH_URL,
+    secret: env.BETTER_AUTH_SECRET,
+    trustedOrigins: [env.BETTER_AUTH_URL],
     database: prismaAdapter(prisma, {
         provider: "postgresql", // or "mysql", "postgresql", ...etc
     }),
