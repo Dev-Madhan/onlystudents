@@ -90,6 +90,8 @@ model Course {
   status           CourseStatus @default(Draft)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
+  stripeProductId  String?
+  stripePriceId    String?
   userId           String
   demoVideoKey     String?
   chapters         Chapter[]

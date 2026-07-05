@@ -26,6 +26,8 @@ export async function enrollInCourseAction(
 ): Promise<ApiResponse | never> {
   const user = await requireUser();
 
+  let checkoutUrlToRedirect: string | null = null;
+
   try {
     // ─────────────────────────────────────────────
     // Arcjet protection
@@ -52,6 +54,8 @@ export async function enrollInCourseAction(
         title: true,
         price: true,
         slug: true,
+        stripePriceId: true,
+        stripeProductId: true,
       },
     });
 
@@ -73,7 +77,27 @@ export async function enrollInCourseAction(
     });
 
     if (dbUser?.stripeCustomerId) {
-      stripeCustomerId = dbUser.stripeCustomerId;
+      try {
+        const customer = await stripe.customers.retrieve(dbUser.stripeCustomerId);
+        if (customer.deleted) {
+          throw new Error("Customer deleted");
+        }
+        stripeCustomerId = dbUser.stripeCustomerId;
+      } catch (err) {
+        // Customer not found or deleted in Stripe, create a new one
+        const customer = await stripe.customers.create({
+          email: user.email ?? undefined,
+          name: user.name ?? undefined,
+          metadata: { userId: user.id },
+        });
+
+        stripeCustomerId = customer.id;
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { stripeCustomerId },
+        });
+      }
     } else {
       const customer = await stripe.customers.create({
         email: user.email ?? undefined,
@@ -127,12 +151,25 @@ export async function enrollInCourseAction(
             },
           });
 
+      let currentStripePriceId = course.stripePriceId;
+      if (!currentStripePriceId) {
+        // Automatically populate the Stripe IDs for the course if they are missing
+        const updatedCourse = await tx.course.update({
+          where: { id: courseId },
+          data: {
+            stripeProductId: "prod_UpPvKshMwSb9Pp",
+            stripePriceId: "price_1Tpl5F0OBCTXaBrjlieHmxO5"
+          }
+        });
+        currentStripePriceId = updatedCourse.stripePriceId;
+      }
+
       const session = await stripe.checkout.sessions.create({
         customer: stripeCustomerId,
         mode: "payment",
         line_items: [
           {
-            price: "price_1SseUrGRZJzZi32YeYoF3QNi", // TODO: dynamic later
+            price: currentStripePriceId!,
             quantity: 1,
           },
         ],
@@ -158,15 +195,10 @@ export async function enrollInCourseAction(
       };
     }
 
-    // 🚨 MUST NOT BE CAUGHT
-    redirect(checkoutUrl);
+    checkoutUrlToRedirect = checkoutUrl;
   } catch (error) {
-    // ✅ Allow Next.js redirect to work
-    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
-      throw error;
-    }
-
     if (error instanceof Stripe.errors.StripeError) {
+      console.error("Stripe Error Details:", error);
       return {
         status: "error",
         message: "Payment system error. Please try again later.",
@@ -180,4 +212,10 @@ export async function enrollInCourseAction(
       message: "Failed to enroll in course",
     };
   }
+
+  return {
+    status: "success",
+    checkoutUrl: checkoutUrlToRedirect as string,
+  };
 }
+

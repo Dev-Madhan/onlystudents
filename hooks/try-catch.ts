@@ -1,3 +1,5 @@
+import { isRedirectError } from "next/dist/client/components/redirect-error";
+
 // Types for the result object with discriminated union
 type Success<T> = {
   data: T;
@@ -19,6 +21,9 @@ export async function tryCatch<T, E = Error>(
     const data = await promise;
     return { data, error: null };
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
     return { data: null, error: error as E };
   }
 }

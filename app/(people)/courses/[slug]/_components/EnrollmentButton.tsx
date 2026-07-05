@@ -22,9 +22,15 @@ export function EnrollmentButton({ courseId }: { courseId: string }) {
       }
 
       if (result.status === "success") {
-        toast.success(result.message);
+        if ("checkoutUrl" in result && result.checkoutUrl) {
+          window.location.assign(result.checkoutUrl);
+        } else if ("message" in result && result.message) {
+          toast.success(result.message);
+        }
       } else {
-        toast.error(result.message);
+        if ("message" in result && result.message) {
+          toast.error(result.message);
+        }
       }
     });
   }
