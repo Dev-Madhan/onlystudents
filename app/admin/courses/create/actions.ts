@@ -6,6 +6,8 @@ import { ApiResponse } from "@/lib/types";
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import { stripe } from "@/lib/stripe";
+import { constructUrl } from "@/lib/construct-url";
 
 /* =========================================================
    ARCJET CONFIG
@@ -83,35 +85,83 @@ export async function CreateCourse(
       status,
     } = parsed.data;
 
+    /* ---------------- STRIPE PRODUCT + PRICE ---------------- */
+
+    let stripeData;
+    try {
+      stripeData = await stripe.products.create({
+        name: title,
+        description: smallDescription,
+        images: [constructUrl(fileKey)],
+        default_price_data: {
+          currency: "inr",
+          unit_amount: price * 100, // convert rupees → paise
+        },
+        metadata: {
+          slug,
+          level,
+          category,
+          duration: String(duration),
+        },
+      });
+    } catch (stripeError: any) {
+      console.error("Stripe product creation failed:", stripeError);
+      return {
+        status: "error",
+        message: "Stripe product creation failed: " + (stripeError.message || "Unknown Stripe error"),
+      };
+    }
+
     /* ---------------- DATABASE ---------------- */
 
-    await prisma.course.create({
-      data: {
-        title,
-        description,
-        fileKey,
-        demoVideoKey, // ✅ optional, safe
-        price,
-        duration,
-        level,
-        category,
-        smallDescription,
-        slug,
-        status,
-        userId: session.user.id,
-      },
-    });
+    try {
+      await prisma.course.create({
+        data: {
+          title,
+          description,
+          fileKey,
+          demoVideoKey,
+          price,
+          duration,
+          level,
+          category,
+          smallDescription,
+          slug,
+          status,
+          userId: session.user.id,
+          stripeProductId: stripeData.id,
+          stripePriceId: stripeData.default_price as string,
+        },
+      });
+    } catch (dbError: any) {
+      console.error("Database course creation failed:", dbError);
+      // Stripe product was created but DB failed — clean up the orphaned Stripe product
+      await stripe.products.update(stripeData.id, { active: false }).catch(() => {});
+      return {
+        status: "error",
+        message: "Database error: " + (dbError.message || "Unknown DB error"),
+      };
+    }
 
     return {
       status: "success",
       message: "Course created successfully.",
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("CreateCourse error:", error);
+
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      String(error.digest).startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
 
     return {
       status: "error",
-      message: "Failed to create course.",
+      message: "Failed to create course. " + (error.message || ""),
     };
   }
 }

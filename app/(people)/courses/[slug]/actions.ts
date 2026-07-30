@@ -116,7 +116,7 @@ export async function enrollInCourseAction(
     // ─────────────────────────────────────────────
     // 3. Transaction: enrollment + checkout
     // ─────────────────────────────────────────────
-    const { checkoutUrl } = await prisma.$transaction(async (tx) => {
+    const { checkoutUrl, error: txError } = await prisma.$transaction(async (tx) => {
       const existingEnrollment = await tx.enrollment.findUnique({
         where: {
           userId_courseId: {
@@ -151,17 +151,9 @@ export async function enrollInCourseAction(
             },
           });
 
-      let currentStripePriceId = course.stripePriceId;
+      const currentStripePriceId = course.stripePriceId;
       if (!currentStripePriceId) {
-        // Automatically populate the Stripe IDs for the course if they are missing
-        const updatedCourse = await tx.course.update({
-          where: { id: courseId },
-          data: {
-            stripeProductId: "prod_UpPvKshMwSb9Pp",
-            stripePriceId: "price_1Tpl5F0OBCTXaBrjlieHmxO5"
-          }
-        });
-        currentStripePriceId = updatedCourse.stripePriceId;
+        return { checkoutUrl: null, error: "This course is not yet available for purchase. Please contact the administrator." };
       }
 
       const session = await stripe.checkout.sessions.create({
@@ -188,6 +180,10 @@ export async function enrollInCourseAction(
     // ─────────────────────────────────────────────
     // 4. Final result
     // ─────────────────────────────────────────────
+    if (txError) {
+      return { status: "error", message: txError };
+    }
+
     if (!checkoutUrl) {
       return {
         status: "success",

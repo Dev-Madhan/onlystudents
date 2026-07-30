@@ -1,5 +1,6 @@
 import {requireAdmin} from "@/app/data/admin/require-admin";
 import {prisma} from "@/lib/db";
+import {constructUrl} from "@/lib/construct-url";
 
 export async function adminGetCourses() {
     // await new Promise(resolve => setTimeout(resolve, 2000));
@@ -22,7 +23,10 @@ export async function adminGetCourses() {
         },
     });
 
-    return data;
+    return data.map((course) => ({
+        ...course,
+        thumbnailUrl: constructUrl(course.fileKey),
+    }));
 }
 
-export type AdminCourseType = Awaited<ReturnType<typeof adminGetCourses>>[0]
+export type AdminCourseType = Awaited<ReturnType<typeof adminGetCourses>>[0]

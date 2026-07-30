@@ -1,7 +1,6 @@
 import {Card, CardContent} from "@/components/ui/card";
 import Image from "next/image";
 import {AdminCourseType} from "@/app/data/admin/admin-get-courses";
-import {useConstructUrl} from "@/hooks/use-construct-url";
 import Link from "next/link";
 import {ArrowRight, Eye, MoreVertical, Pencil, School, TimerIcon, Trash2} from "lucide-react";
 import {Button, buttonVariants} from "@/components/ui/button";
@@ -19,7 +18,6 @@ interface iAppProps {
 }
 
 export function AdminCourseCard({data}: iAppProps) {
-    const thumbnailUrl = useConstructUrl(data.fileKey)
     return (
         <Card className="group relative py-0 gap-0">
             {/*{ absolute dropdown }*/}
@@ -56,7 +54,8 @@ export function AdminCourseCard({data}: iAppProps) {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <Image src={thumbnailUrl} alt="Thumbnail URL" width={600} height={400}
+            <Image src={data.thumbnailUrl} alt={data.title} width={600} height={400}
+                   unoptimized
                    className="w-full rounded-t-lg aspect-video h-full object-cover"/>
 
             <CardContent className="p-4">
