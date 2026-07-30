@@ -55,7 +55,7 @@ export function EditCourseForm({ data }: EditCourseFormProps) {
   const router = useRouter();
 
   const form = useForm<CourseSchemaType>({
-    resolver: zodResolver(courseSchema),
+    resolver: zodResolver(courseSchema) as any,
     mode: "onSubmit",
     defaultValues: {
       title: data.title,
