@@ -1,3 +1,4 @@
+import "server-only";
 import {prisma} from "@/lib/db";
 import {constructUrl} from "@/lib/construct-url";
 
@@ -29,4 +30,4 @@ export async function getAllCourse() {
 }
 
 export type PublicCourseType = Awaited<ReturnType<typeof getAllCourse>>[0]
-
+
