@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 /* Add this line to enable the prose classes */
 @plugin "@tailwindcss/typography";
 

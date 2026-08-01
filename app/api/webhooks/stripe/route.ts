@@ -26,31 +26,17 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (event.type === "checkout.session.completed") {
-        const courseId = session.metadata?.courseId;
-        const customerId = session.customer as string;
+        const enrollmentId = session.metadata?.enrollmentId;
 
-        if (!courseId) {
-            throw new Error("Course id not found...");
-        }
-
-        const user = await prisma.user.findUnique({
-            where: {
-                stripeCustomerId: customerId,
-            },
-        });
-
-        if (!user) {
-            throw new Error("User not found...");
+        if (!enrollmentId) {
+            throw new Error("Enrollment id not found in metadata...");
         }
 
         await prisma.enrollment.update({
             where: {
-                id: session.metadata?.enrollmentId as string,
+                id: enrollmentId,
             },
             data: {
-                userId: user.id,
-                courseId: courseId,
-                amount: Math.round((session.amount_total as number) / 100),
                 status: "Active",
             },
         });

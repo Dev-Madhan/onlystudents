@@ -6,24 +6,24 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model User {
-  id               String       @id @default(uuid())
+  id               String           @id @default(uuid())
   name             String
-  email            String       @unique
-  emailVerified    Boolean      @default(false)
+  email            String           @unique
+  emailVerified    Boolean          @default(false)
   image            String?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
   banExpires       DateTime?
   banReason        String?
-  banned           Boolean      @default(false)
+  banned           Boolean          @default(false)
   role             String?
-  stripeCustomerId String?      @unique
+  stripeCustomerId String?          @unique
   courses          Course[]
   enrollment       Enrollment[]
   accounts         Account[]
   sessions         Session[]
+  lessonProgress   LessonProgress[]
 
   @@map("user")
 }
@@ -91,7 +91,7 @@ model Course {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
   stripeProductId  String?
-  stripePriceId    String?    @unique
+  stripePriceId    String?      @unique
   userId           String
   demoVideoKey     String?
   chapters         Chapter[]
@@ -111,16 +111,17 @@ model Chapter {
 }
 
 model Lesson {
-  id           String   @id @default(uuid())
-  title        String
-  description  String?
-  thumbnailKey String?
-  videoKey     String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  chapterId    String
-  position     Int
-  chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  id             String           @id @default(uuid())
+  title          String
+  description    String?
+  thumbnailKey   String?
+  videoKey       String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  chapterId      String
+  position       Int
+  chapter        Chapter          @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
 }
 
 model Enrollment {
@@ -153,4 +154,19 @@ enum EnrollmentStatus {
   Pending
   Active
   Cancelled
+}
+
+model LessonProgress {
+  id        String   @id @default(uuid())
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
 }

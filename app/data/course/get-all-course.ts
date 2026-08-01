@@ -1,8 +1,10 @@
 import "server-only";
 import {prisma} from "@/lib/db";
 import {constructUrl} from "@/lib/construct-url";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function getAllCourse() {
+    noStore();
     const data = await prisma.course.findMany({
         where: {
             status: "Published",

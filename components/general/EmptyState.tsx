@@ -11,7 +11,7 @@ interface iAppProps {
 
 export function EmptyState({buttonText, description, title, href}: iAppProps) {
     return(
-        <div className="flex flex-col flex-1 h-full items-center justify-center rounded-md border-dashed border-2 p-8 text-center animate-in fade-in-50">
+        <div className="flex flex-col items-center justify-center rounded-md border-dashed border-2 p-8 text-center animate-in fade-in-50 min-h-[400px]">
             <div className="flex size-20 items-center justify-center rounded-full bg-primary/10">
                 <Ban className="size-10 text-primary" />
             </div>
