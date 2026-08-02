@@ -2,6 +2,7 @@ import { getAllCourse } from "../data/course/get-all-course";
 import { getEnrolledCourses } from "../data/user/get-enrolled-courses";
 import { EmptyState } from "@/components/general/EmptyState";
 import { PublicCourseCard } from "@/app/(people)/_components/PublicCourseCard";
+import { CourseProgressCard } from "./_components/CourseProgressCard";
 
 export default async function DashboardPage() {
   const [courses, enrolledCourses] = await Promise.all([
@@ -27,10 +28,10 @@ export default async function DashboardPage() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {enrolledCourses.map((enrollment: any) => (
-            <PublicCourseCard 
+          {enrolledCourses.map((enrollment) => (
+            <CourseProgressCard 
               key={enrollment.course.id} 
-              data={enrollment.course as any} 
+              data={enrollment} 
               linkPrefix="/dashboard" 
             />
           ))}

@@ -15,7 +15,7 @@ interface iAppProps {
 export function PublicCourseCard({data, linkPrefix = "/courses"}: iAppProps) {
     return (
         <Card className="group relative py-0 gap-0">
-            <Badge className="absolute top-2 right-2 z-10">{data.level}</Badge>
+            <Badge className="absolute top-2 right-2 z-10 bg-course-level text-course-level-foreground hover:bg-course-level/80 border-none backdrop-blur-md">{data.level}</Badge>
             <Image src={data.thumbnailUrl} alt={data.title} width={600} height={600} unoptimized className="w-full rounded-t-xl aspect-video h-full object-cover" />
 
             <CardContent className="p-4">

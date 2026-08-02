@@ -12,17 +12,17 @@ interface iAppProps {
     };
     slug: string;
     isActive?: boolean;
+    completed: boolean;
 }
 
-export function LessonItem({ lesson, slug, isActive }: iAppProps) {
-    const completed = false;
+export function LessonItem({ lesson, slug, isActive, completed }: iAppProps) {
     return (
         <Link
             href={`/dashboard/${slug}/${lesson.id}`}
             className={buttonVariants({
-                variant: "ghost",
+                variant: completed ? "ghost" : "outline",
                 className: cn(
-                    "w-full p-2.5 h-auto justify-start transition-all border",
+                    "w-full p-2.5 h-auto justify-start transition-all border-2",
                     completed
                         ? "bg-primary/10 border-primary/20 text-primary hover:bg-primary/20"
                         : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/20",

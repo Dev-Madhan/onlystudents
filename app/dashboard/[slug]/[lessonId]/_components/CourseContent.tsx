@@ -4,16 +4,44 @@ import { LessonContentType } from "@/app/data/course/get-lesson-content";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { env } from "@/lib/env";
-import { CheckCircle, BookIcon } from "lucide-react";
+import { CheckCircle, BookIcon, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { useConfetti } from "@/hooks/use-confetti";
+import { markLessonComplete } from "../action";
+import { tryCatch } from "@/hooks/try-catch";
 
 interface iAppProps {
     data: LessonContentType;
 }
 
 export function CourseContent({ data }: iAppProps) {
+    const [pending, startTransition] = useTransition();
+    const { triggerConfetti } = useConfetti();
+
+    function onSubmit() {
+        startTransition(async () => {
+            const { data: result, error } = await tryCatch(
+                markLessonComplete(data.id, data.chapter.course.slug)
+            );
+
+            if (error) {
+                toast.error("An unexpected error occurred. Please try again.");
+                return;
+            }
+
+            if (result?.status === "success") {
+                toast.success(result.message);
+                triggerConfetti();
+            } else if (result) {
+                toast.error(result.message);
+            }
+        });
+    }
+
     function VideoPlayer({
         thumbnailKey,
         videoKey,
@@ -55,20 +83,29 @@ export function CourseContent({ data }: iAppProps) {
         <div className="flex flex-col gap-8 w-full p-4 md:p-8">
             <div className="space-y-6">
                 <VideoPlayer
-                    videoKey={data.videoKey}
-                    thumbnailKey={data.thumbnailKey}
+                    thumbnailKey={data.thumbnailKey ?? ""}
+                    videoKey={data.videoKey ?? ""}
                 />
 
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 border-b">
-                    <div className="flex flex-col gap-2">
-                        <h1 className="text-3xl font-bold tracking-tight">{data.title}</h1>
-                        <p className="text-muted-foreground font-serif">Lesson {data.position}</p>
-                    </div>
-
-                    <Button size="lg" variant="outline" className="shrink-0 flex items-center gap-2">
-                        <CheckCircle className="size-5 text-primary" />
-                        Mark as Completed
-                    </Button>
+                <div className="py-4 border-b">
+                    {data.lessonProgress.length > 0 ? (
+                        <Button
+                            variant="outline"
+                            className="bg-green-500/10 text-green-500 hover:text-green-600"
+                        >
+                            <CheckCircle className="size-4 mr-2 text-green-500" />
+                            Completed
+                        </Button>
+                    ) : (
+                        <Button variant="outline" onClick={onSubmit} disabled={pending}>
+                            {pending ? (
+                                <Loader2 className="size-4 mr-2 animate-spin" />
+                            ) : (
+                                <CheckCircle className="size-4 mr-2 text-green-500" />
+                            )}
+                            Mark as Complete
+                        </Button>
+                    )}
                 </div>
 
                 <div className="pt-4">
@@ -85,3 +122,4 @@ export function CourseContent({ data }: iAppProps) {
         </div>
     );
 }
+

@@ -59,6 +59,9 @@
   --shadow-2xl: 0px 0.5px 1px 0px hsl(202.8169 89.1213% 53.1373% / 0.38);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  --course-level-bg: oklch(0 0 0 / 0.4);
+  --course-level-text: oklch(1 0 0);
 }
 
 .dark {
@@ -112,6 +115,9 @@
   --shadow-lg: 0px 0.5px 1px 0px hsl(202.8169 89.1213% 53.1373% / 0.15), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.15);
   --shadow-xl: 0px 0.5px 1px 0px hsl(202.8169 89.1213% 53.1373% / 0.15), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.15);
   --shadow-2xl: 0px 0.5px 1px 0px hsl(202.8169 89.1213% 53.1373% / 0.38);
+
+  --course-level-bg: oklch(0 0 0 / 0.4);
+  --course-level-text: oklch(1 0 0);
 }
 
 @theme inline {
@@ -165,6 +171,9 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  --color-course-level: var(--course-level-bg);
+  --color-course-level-foreground: var(--course-level-text);
 }
 
 @layer base {

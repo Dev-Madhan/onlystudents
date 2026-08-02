@@ -3,6 +3,8 @@
 import * as React from "react"
 import { Progress as ProgressPrimitive } from "radix-ui"
 
+import { motion } from "motion/react"
+
 import { cn } from "@/lib/utils"
 
 function Progress({
@@ -19,11 +21,14 @@ function Progress({
       )}
       {...props}
     >
-      <ProgressPrimitive.Indicator
-        data-slot="progress-indicator"
-        className="h-full w-full flex-1 bg-primary transition-all"
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-      />
+      <ProgressPrimitive.Indicator asChild data-slot="progress-indicator">
+        <motion.div
+          className="h-full w-full flex-1 bg-primary"
+          initial={{ x: "-100%" }}
+          animate={{ x: `-${100 - (value || 0)}%` }}
+          transition={{ type: "spring", bounce: 0, duration: 0.8 }}
+        />
+      </ProgressPrimitive.Indicator>
     </ProgressPrimitive.Root>
   )
 }
