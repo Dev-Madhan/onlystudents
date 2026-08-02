@@ -25,6 +25,12 @@ export function NavMain({
 }) {
   const pathname = usePathname();
 
+  const isActive = (itemUrl: string) => {
+    if (pathname === itemUrl) return true;
+    if (itemUrl === "/dashboard" || itemUrl === "/admin") return false;
+    return pathname?.startsWith(`${itemUrl}/`);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -50,12 +56,12 @@ export function NavMain({
                 <Link 
                   href={item.url}
                   className={cn(
-                    pathname === item.url && "bg-accent text-accent-foreground"
+                    isActive(item.url) && "bg-accent text-accent-foreground"
                   )}
                 >
                     {item.icon && (
                       <item.icon 
-                        className={cn(pathname === item.url && "text-primary")} 
+                        className={cn(isActive(item.url) && "text-primary")} 
                       />
                     )}
                     <span>{item.title}</span>

@@ -27,17 +27,17 @@ export function PublicCourseCard({data, linkPrefix = "/courses"}: iAppProps) {
                 <div className="mt-4 flex items-center gap-x-5">
                     <div className="flex items-center gap-x-2">
                         <TimerIcon className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-                        <p className="text-sm text-muted-foreground font-medium">{data.duration}h</p>
+                        <p className="text-sm text-muted-foreground font-medium font-mono">{data.duration}h</p>
                     </div>
 
                     <div className="flex items-center gap-x-2">
                         <School className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-                        <p className="text-sm text-muted-foreground font-medium">{data.category}</p>
+                        <p className="text-sm text-muted-foreground font-medium font-mono">{data.category}</p>
                     </div>
                 </div>
 
                 <Link href={`${linkPrefix}/${data.slug}`} className={buttonVariants({
-                    className: "w-full mt-4 font-mono"
+                    className: "w-full mt-4 font-mono font-medium"
                 })}>
                     Learn More
                 </Link>

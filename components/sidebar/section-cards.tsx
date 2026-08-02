@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { AnimatedMetric } from "@/app/admin/sales/_components/animated-metric"
 
 interface SectionCardsProps {
   totalSignups: number;
@@ -29,7 +30,7 @@ export function SectionCards({
           <div>
             <CardDescription>Total Signups</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {totalSignups.toLocaleString()}
+              <AnimatedMetric value={totalSignups} />
             </CardTitle>
           </div>
           <UserPlus className="size-6 text-muted-foreground" />
@@ -43,7 +44,7 @@ export function SectionCards({
           <div>
             <CardDescription>Total Customers</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {totalCustomers.toLocaleString()}
+              <AnimatedMetric value={totalCustomers} />
             </CardTitle>
           </div>
           <Users className="size-6 text-muted-foreground" />
@@ -57,7 +58,7 @@ export function SectionCards({
           <div>
             <CardDescription>Total Courses</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {totalCourses.toLocaleString()}
+              <AnimatedMetric value={totalCourses} />
             </CardTitle>
           </div>
           <BookOpen className="size-6 text-muted-foreground" />
@@ -71,7 +72,7 @@ export function SectionCards({
           <div>
             <CardDescription>Total Lessons</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {totalLessons.toLocaleString()}
+              <AnimatedMetric value={totalLessons} />
             </CardTitle>
           </div>
           <FileText className="size-6 text-muted-foreground" />

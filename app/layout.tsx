@@ -4,9 +4,6 @@ import "./globals.css";
 import React from "react";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import {Cursor1} from "@/components/ui/cursor-1";
-
-
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -39,8 +36,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
       >
-          <Cursor1 />
-
           {children}
           <Toaster closeButton position="bottom-right" />
       </ThemeProvider>

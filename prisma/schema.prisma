@@ -23,7 +23,10 @@ model User {
   enrollment       Enrollment[]
   accounts         Account[]
   sessions         Session[]
-  lessonProgress   LessonProgress[]
+  lessonProgress        LessonProgress[]
+
+  notifyCourseUpdates   Boolean          @default(true)
+  notifyAccountActivity Boolean          @default(false)
 
   @@map("user")
 }

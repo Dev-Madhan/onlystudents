@@ -3,11 +3,8 @@
 import * as React from "react"
 import Logo from "@/app/src/assets/images/Logo.png";
 import {
-    IconCamera,
     IconChartBar,
     IconDashboard,
-    IconFileAi,
-    IconFileDescription,
     IconFolder,
     IconHelp,
     IconListDetails,
@@ -39,103 +36,77 @@ const data = {
     },
     navMain: [
         {
-            title: "Dashboard",
+            title: "My Courses",
             url: "/dashboard",
             icon: IconDashboard,
         },
-    ],
-    navClouds: [
         {
-            title: "Capture",
-            icon: IconCamera,
-            isActive: true,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
+            title: "Browse Catalog",
+            url: "/dashboard/courses",
+            icon: IconListDetails,
         },
         {
-            title: "Proposal",
-            icon: IconFileDescription,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-        {
-            title: "Prompts",
-            icon: IconFileAi,
-            url: "#",
-            items: [
-                {
-                    title: "Active Proposals",
-                    url: "#",
-                },
-                {
-                    title: "Archived",
-                    url: "#",
-                },
-            ],
-        },
-    ],
-    navSecondary: [
-        {
-            title: "Settings",
-            url: "#",
-            icon: IconSettings,
-        },
-        {
-            title: "Get Help",
-            url: "#",
-            icon: IconHelp,
-        },
-        {
-            title: "Search",
-            url: "#",
-            icon: IconSearch,
+            title: "Billing",
+            url: "/dashboard/billing",
+            icon: IconChartBar,
         },
     ],
 };
 
+import { SettingsDialog } from "./SettingsDialog";
+import { SearchDialog } from "./SearchDialog";
+
 export function DashboardAppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const [settingsOpen, setSettingsOpen] = React.useState(false);
+    const [searchOpen, setSearchOpen] = React.useState(false);
+
+    const navSecondary = [
+        {
+            title: "Settings",
+            icon: IconSettings,
+            onClick: () => setSettingsOpen(true),
+        },
+        {
+            title: "Get Help",
+            icon: IconHelp,
+            url: "mailto:devmadhan24@gmail.com",
+        },
+        {
+            title: "Search",
+            icon: IconSearch,
+            onClick: () => setSearchOpen(true),
+        },
+    ];
+
     return (
-        <Sidebar collapsible="offcanvas" {...props}>
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            asChild
-                            className="data-[slot=sidebar-menu-button]:!p-1.5"
-                        >
-                            <Link href="/">
-                                <Image src={Logo} alt='Logo' className='size-5' />
-                                <span className="text-base font-mono font-semibold">Only Students</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-            <SidebarContent>
-                <NavMain items={data.navMain} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
-            </SidebarContent>
-            <SidebarFooter>
-                <NavUser />
-            </SidebarFooter>
-        </Sidebar>
+        <>
+            <Sidebar collapsible="offcanvas" {...props}>
+                <SidebarHeader>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                asChild
+                                className="data-[slot=sidebar-menu-button]:!p-1.5"
+                            >
+                                <Link href="/">
+                                    <Image src={Logo} alt='Logo' className='size-5' />
+                                    <span className="text-base font-mono font-semibold">Only Students</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarHeader>
+                <SidebarContent>
+                    <NavMain items={data.navMain} />
+                    <NavSecondary items={navSecondary} className="mt-auto" />
+                </SidebarContent>
+                <SidebarFooter>
+                    <NavUser />
+                </SidebarFooter>
+            </Sidebar>
+
+            <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+            <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+        </>
     )
 }
