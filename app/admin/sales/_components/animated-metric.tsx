@@ -10,7 +10,7 @@ export function AnimatedMetric({
 }: { 
   value: number; 
   prefix?: string; 
-  format?: Intl.NumberFormatOptions;
+  format?: React.ComponentProps<typeof NumberFlow>["format"];
 }) {
   const [displayValue, setDisplayValue] = useState(0);
 
