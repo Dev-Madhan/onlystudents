@@ -11,14 +11,14 @@ export const courseStatus = ["Draft", "Published", "Archived"] as const;
 export const courseCategories = [
   "Programming",
   "Design",
-  "Gaming",
   "Business",
-  "It & Software",
-  "Video Editing",
-  "Office productivity",
+  "Marketing",
+  "AI & Technology",
   "Personal Development",
+  "Career Development",
   "Health & Fitness",
-  "Teaching & Academics",
+  "Creative Skills",
+  "Academic Learning",
 ] as const;
 
 /* =========================================================
