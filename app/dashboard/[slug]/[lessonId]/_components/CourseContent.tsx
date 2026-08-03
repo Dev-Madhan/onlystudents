@@ -13,12 +13,17 @@ import { toast } from "sonner";
 import { useConfetti } from "@/hooks/use-confetti";
 import { markLessonComplete } from "../action";
 import { tryCatch } from "@/hooks/try-catch";
+import { CommentSection } from "./CommentSection";
+import { LessonComment } from "@/app/data/course/get-comments";
 
 interface iAppProps {
     data: LessonContentType;
+    comments: LessonComment[];
+    courseSlug: string;
+    currentUserId?: string;
 }
 
-export function CourseContent({ data }: iAppProps) {
+export function CourseContent({ data, comments, courseSlug, currentUserId }: iAppProps) {
     const [pending, startTransition] = useTransition();
     const { triggerConfetti } = useConfetti();
 
@@ -118,6 +123,13 @@ export function CourseContent({ data }: iAppProps) {
                         )}
                     </div>
                 </div>
+                
+                <CommentSection 
+                    lessonId={data.id} 
+                    courseSlug={courseSlug} 
+                    comments={comments} 
+                    currentUserId={currentUserId} 
+                />
             </div>
         </div>
     );

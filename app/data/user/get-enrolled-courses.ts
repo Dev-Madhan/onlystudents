@@ -3,12 +3,10 @@ import { requireUser } from "./require-user";
 import { prisma } from "@/lib/db";
 import { constructUrl } from "@/lib/construct-url";
 
-export async function getEnrolledCourses() {
-  const user = await requireUser();
-
+export async function getEnrolledCoursesByUserId(userId: string) {
   const data = await prisma.enrollment.findMany({
     where: {
-      userId: user.id,
+      userId: userId,
       status: "Active",
     },
     select: {
@@ -29,7 +27,7 @@ export async function getEnrolledCourses() {
                   id: true,
                   lessonProgress: {
                     where: {
-                      userId: user.id,
+                      userId: userId,
                     },
                     select: {
                       completed: true,
@@ -54,6 +52,11 @@ export async function getEnrolledCourses() {
   }));
 }
 
+export async function getEnrolledCourses() {
+  const user = await requireUser();
+  return getEnrolledCoursesByUserId(user.id);
+}
+
 export type EnrolledCourseType = Awaited<
-  ReturnType<typeof getEnrolledCourses>
+  ReturnType<typeof getEnrolledCoursesByUserId>
 >[0];

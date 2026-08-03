@@ -14,9 +14,10 @@ import { useCourseProgress } from "@/hooks/use-course-progress";
 
 interface iAppProps {
   course: CourseSidebarDataType["course"];
+  closeButton?: React.ReactNode;
 }
 
-export function CourseSidebar({ course }: iAppProps) {
+export function CourseSidebar({ course, closeButton }: iAppProps) {
   const pathname = usePathname();
   const currentLessonId = pathname.split("/").pop();
 
@@ -37,6 +38,11 @@ export function CourseSidebar({ course }: iAppProps) {
               {course.category}
             </p>
           </div>
+          {closeButton && (
+            <div className="shrink-0">
+              {closeButton}
+            </div>
+          )}
         </div>
 
         <div className="space-y-2 mt-4">

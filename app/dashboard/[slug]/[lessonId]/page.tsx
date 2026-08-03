@@ -2,24 +2,31 @@ import { getLessonContent } from "@/app/data/course/get-lesson-content";
 import { CourseContent } from "./_components/CourseContent";
 import { LessonSkeleton } from "./_components/LessonSkeleton";
 import { Suspense } from "react";
+import { getComments } from "@/app/data/course/get-comments";
+import { requireUser } from "@/app/data/user/require-user";
 
-type Params = Promise<{ lessonId: string }>;
+type Params = Promise<{ lessonId: string; slug: string }>;
 
 export default async function LessonContentPage({
   params,
 }: {
   params: Params;
 }) {
-  const { lessonId } = await params;
+  const { lessonId, slug } = await params;
 
   return (
     <Suspense fallback={<LessonSkeleton />}>
-      <LessonContentLoader lessonId={lessonId} />
+      <LessonContentLoader lessonId={lessonId} slug={slug} />
     </Suspense>
   );
 }
 
-async function LessonContentLoader({ lessonId }: { lessonId: string }) {
-  const data = await getLessonContent(lessonId);
-  return <CourseContent data={data} />;
+async function LessonContentLoader({ lessonId, slug }: { lessonId: string; slug: string }) {
+  const [data, comments, user] = await Promise.all([
+    getLessonContent(lessonId),
+    getComments(lessonId),
+    requireUser().catch(() => null),
+  ]);
+  
+  return <CourseContent data={data} comments={comments} courseSlug={slug} currentUserId={user?.id} />;
 }

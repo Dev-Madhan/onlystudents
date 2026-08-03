@@ -35,6 +35,7 @@ export default function Navbar() {
                     <NavigationMenu>
                         <NavigationMenuList className="gap-4">
                             {navigationLinks.map((link, index) => {
+                                if (link.href === "/admin" && session?.user?.role !== "admin") return null;
                                 const Icon = link.icon;
                                 return (
                                     <NavigationMenuItem key={index}>

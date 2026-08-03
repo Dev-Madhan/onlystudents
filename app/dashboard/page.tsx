@@ -23,30 +23,25 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold font-bricolage">Enrolled Courses</h1>
-        <p className="text-muted-foreground">
-          Here you can see all the courses you have access to
-        </p>
-      </div>
+      {enrolledCourses.length > 0 && (
+        <>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold font-bricolage">Enrolled Courses</h1>
+            <p className="text-muted-foreground">
+              Here you can see all the courses you have access to
+            </p>
+          </div>
 
-      {enrolledCourses.length === 0 ? (
-        <EmptyState
-          title="No courses purchased"
-          description="You haven't purchased any courses yet."
-          buttonText="Browse Courses"
-          href="/courses"
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {enrolledCourses.map((enrollment) => (
-            <CourseProgressCard 
-              key={enrollment.course.id} 
-              data={enrollment} 
-              linkPrefix="/dashboard" 
-            />
-          ))}
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {enrolledCourses.map((enrollment) => (
+              <CourseProgressCard 
+                key={enrollment.course.id} 
+                data={enrollment} 
+                linkPrefix="/dashboard" 
+              />
+            ))}
+          </div>
+        </>
       )}
 
       <section className="mt-10">

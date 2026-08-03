@@ -24,6 +24,7 @@ model User {
   accounts         Account[]
   sessions         Session[]
   lessonProgress        LessonProgress[]
+  comments         Comment[]
 
   notifyCourseUpdates   Boolean          @default(true)
   notifyAccountActivity Boolean          @default(false)
@@ -125,6 +126,7 @@ model Lesson {
   position       Int
   chapter        Chapter          @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   lessonProgress LessonProgress[]
+  comments       Comment[]
 }
 
 model Enrollment {
@@ -172,4 +174,21 @@ model LessonProgress {
   lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  parentId String?
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
 }
