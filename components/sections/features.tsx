@@ -39,10 +39,10 @@ export default function Features() {
                 </div>
 
                 {/* Bento Grid */}
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[280px]">
+                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-auto md:auto-rows-[280px]">
 
                     {/* Card 1: Structured Learning — spans 2 columns */}
-                    <Card className="md:col-span-2 p-6 flex flex-col justify-between overflow-hidden">
+                    <Card className="md:col-span-2 p-6 flex flex-col justify-between overflow-hidden min-h-[320px] md:min-h-0">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-mono font-semibold text-lg">Structured Learning</h3>
                             <p className="text-muted-foreground font-serif text-sm max-w-md">
@@ -51,9 +51,9 @@ export default function Features() {
                         </div>
                         <div
                             aria-hidden
-                            className="flex flex-col gap-3 pt-4"
+                            className="flex flex-col gap-3 pt-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                         >
-                            <div className="relative flex items-center gap-6 px-2">
+                            <div className="relative flex items-center gap-4 sm:gap-6 px-2 w-max">
                                 <div className="bg-border absolute inset-0 my-auto h-px" />
                                 <div className="bg-card shadow-sm border-2 border-border relative flex h-9 items-center gap-2 rounded-full px-4">
                                     <BookOpen className="size-4 text-primary" />
@@ -68,7 +68,7 @@ export default function Features() {
                                     <span className="text-xs font-mono text-muted-foreground">Chapter 3</span>
                                 </div>
                             </div>
-                            <div className="relative flex items-center gap-6 px-8">
+                            <div className="relative flex items-center gap-4 sm:gap-6 px-2 sm:px-8 w-max">
                                 <div className="bg-border absolute inset-0 my-auto h-px" />
                                 <div className="bg-card shadow-sm border-2 border-border relative flex h-9 items-center gap-2 rounded-full px-4">
                                     <BookOpen className="size-4 text-primary" />
@@ -87,7 +87,7 @@ export default function Features() {
                     </Card>
 
                     {/* Card 2: Live Progress — tall, spans 2 rows */}
-                    <Card className="md:row-span-2 p-6 flex flex-col overflow-hidden">
+                    <Card className="md:row-span-2 p-6 flex flex-col overflow-hidden min-h-[380px] md:min-h-0">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-mono font-semibold text-lg">Live Progress</h3>
                             <p className="text-muted-foreground font-serif text-sm">
@@ -96,7 +96,7 @@ export default function Features() {
                         </div>
                         <div
                             aria-hidden
-                            className="relative flex-1 flex items-center justify-center"
+                            className="relative flex-1 flex items-center justify-center scale-100 md:scale-[0.8] lg:scale-100"
                         >
                             {/* Crosshair lines */}
                             <div className="bg-foreground/10 absolute inset-0 mx-auto w-px" />
@@ -149,7 +149,7 @@ export default function Features() {
                     </Card>
 
                     {/* Card 3: Self-Paced Study — spans 2 columns */}
-                    <Card className="md:col-span-2 p-6 flex flex-col justify-between overflow-hidden">
+                    <Card className="md:col-span-2 p-6 flex flex-col justify-between overflow-hidden min-h-[320px] md:min-h-0">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-mono font-semibold text-lg">Self-Paced Study</h3>
                             <p className="text-muted-foreground font-serif text-sm max-w-md">
@@ -158,38 +158,40 @@ export default function Features() {
                         </div>
                         <div
                             aria-hidden
-                            className="flex items-end justify-between gap-4 pt-6"
+                            className="flex flex-col xl:flex-row items-start xl:items-end justify-between gap-6 pt-6"
                         >
                             {/* Timeline blocks */}
-                            <div className="flex flex-col gap-2 flex-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="size-2 rounded-full bg-primary" />
-                                    <div className="h-px flex-1 bg-border" />
-                                    <span className="text-[10px] font-mono text-muted-foreground">Week 1</span>
+                            <div className="flex flex-col sm:flex-row gap-6 w-full xl:flex-1">
+                                <div className="flex flex-col gap-2 flex-1 w-full">
+                                    <div className="flex items-center gap-2">
+                                        <div className="size-2 rounded-full bg-primary" />
+                                        <div className="h-px flex-1 bg-border" />
+                                        <span className="text-[10px] font-mono text-muted-foreground">Week 1</span>
+                                    </div>
+                                    <div className="ml-4 flex gap-1.5">
+                                        {[1,2,3,4,5].map(i => (
+                                            <div key={i} className="h-6 flex-1 rounded-sm bg-primary/20 border-2 border-primary/30" />
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="ml-4 flex gap-1.5">
-                                    {[1,2,3,4,5].map(i => (
-                                        <div key={i} className="h-6 flex-1 rounded-sm bg-primary/20 border-2 border-primary/30" />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-2 flex-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="size-2 rounded-full bg-primary" />
-                                    <div className="h-px flex-1 bg-border" />
-                                    <span className="text-[10px] font-mono text-muted-foreground">Week 2</span>
-                                </div>
-                                <div className="ml-4 flex gap-1.5">
-                                    {[1,2,3].map(i => (
-                                        <div key={i} className="h-6 flex-1 rounded-sm bg-primary/40 border-2 border-primary/50" />
-                                    ))}
-                                    {[4,5].map(i => (
-                                        <div key={i} className="h-6 flex-1 rounded-sm bg-border/50 border-2 border-border" />
-                                    ))}
+                                <div className="flex flex-col gap-2 flex-1 w-full">
+                                    <div className="flex items-center gap-2">
+                                        <div className="size-2 rounded-full bg-primary" />
+                                        <div className="h-px flex-1 bg-border" />
+                                        <span className="text-[10px] font-mono text-muted-foreground">Week 2</span>
+                                    </div>
+                                    <div className="ml-4 flex gap-1.5">
+                                        {[1,2,3].map(i => (
+                                            <div key={i} className="h-6 flex-1 rounded-sm bg-primary/40 border-2 border-primary/50" />
+                                        ))}
+                                        {[4,5].map(i => (
+                                            <div key={i} className="h-6 flex-1 rounded-sm bg-border/50 border-2 border-border" />
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                             {/* Controls */}
-                            <div className="flex flex-col gap-2 shrink-0 pb-1">
+                            <div className="flex flex-row xl:flex-col gap-2 shrink-0 xl:pb-1 w-full xl:w-auto justify-end">
                                 <div className="bg-card shadow-sm border-2 border-border flex h-8 items-center gap-1.5 rounded-full px-3">
                                     <Play className="size-3 text-primary fill-primary" />
                                     <span className="text-[10px] font-mono text-muted-foreground">Resume</span>

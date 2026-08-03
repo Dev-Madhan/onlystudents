@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import {buttonVariants} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import Link from "next/link";
-import Features from "@/components/features";
+import Features from "@/components/sections/features";
+import { Integrations } from "@/components/sections/integrations";
+import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { CtaSection } from "@/components/sections/cta-section";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import { BookTextIcon } from "@/components/ui/book-text";
 import { HandMetalIcon } from "@/components/ui/hand-metal";
@@ -60,7 +63,7 @@ export default function Home() {
 
     return (
         <>
-            <section className="relative py-20">
+            <section className="relative py-20 px-6 md:px-8">
                 <div className="flex flex-col items-center text-center space-y-8">
                     <Badge variant="outline" className="font-serif font-medium">
                         The Evolution of Online Education
@@ -82,7 +85,7 @@ export default function Home() {
                 </div>
             </section>
 
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12 max-w-7xl mx-auto">
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12 max-w-7xl mx-auto px-6 md:px-8">
                 {features.map((feature, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow">
                         <CardHeader>
@@ -98,6 +101,10 @@ export default function Home() {
             </section>
 
             <Features />
+            <Integrations />
+            <TestimonialsSection />
+            <CtaSection />
         </>
     );
 }
+
