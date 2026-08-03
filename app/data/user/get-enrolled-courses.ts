@@ -2,10 +2,8 @@ import "server-only";
 import { requireUser } from "./require-user";
 import { prisma } from "@/lib/db";
 import { constructUrl } from "@/lib/construct-url";
-import { unstable_noStore as noStore } from "next/cache";
 
 export async function getEnrolledCourses() {
-  noStore();
   const user = await requireUser();
 
   const data = await prisma.enrollment.findMany({

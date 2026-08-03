@@ -62,14 +62,14 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden shadow-2xl rounded-xl">
+            <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-[550px] p-0 overflow-hidden shadow-2xl rounded-xl">
                 <DialogTitle className="sr-only">Search</DialogTitle>
                 <Command shouldFilter={false} className="bg-background">
-                    <CommandInput 
-                        placeholder="Search for courses..." 
+                    <CommandInput
+                        placeholder="Search for courses..."
                         value={query}
                         onValueChange={setQuery}
-                        className="h-14 text-base"
+                        className="h-12 sm:h-14 text-sm sm:text-base"
                     />
                     <CommandList className="max-h-[400px]">
                         <CommandEmpty className="p-6 text-center text-sm text-muted-foreground">

@@ -111,7 +111,7 @@ export function EditCourseForm({ data }: EditCourseFormProps) {
         />
 
         {/* SLUG */}
-        <div className="flex gap-4 items-end">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-end">
           <FormField
             control={form.control}
             name="slug"
@@ -128,6 +128,7 @@ export function EditCourseForm({ data }: EditCourseFormProps) {
 
           <Button
             type="button"
+            className="w-full sm:w-auto shrink-0"
             onClick={() => {
               const title = form.getValues("title").trim();
               if (!title) return;

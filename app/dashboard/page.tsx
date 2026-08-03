@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">Enrolled Courses</h1>
+        <h1 className="text-3xl font-bold font-bricolage">Enrolled Courses</h1>
         <p className="text-muted-foreground">
           Here you can see all the courses you have access to
         </p>
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
 
       <section className="mt-10">
         <div className="flex flex-col gap-2 mb-4">
-          <h1 className="text-3xl font-bold">Available Courses</h1>
+          <h1 className="text-3xl font-bold font-bricolage">Available Courses</h1>
           <p className="text-muted-foreground">
             Here you can see all the courses you can purchase
           </p>

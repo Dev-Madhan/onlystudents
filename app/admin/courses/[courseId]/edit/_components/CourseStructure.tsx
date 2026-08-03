@@ -272,7 +272,7 @@ export function CourseStructure({ data }: iAppProps) {
       onDragEnd={handleDragEnd}
     >
       <Card>
-        <CardHeader className="flex items-center justify-between border-b">
+        <CardHeader className="flex flex-wrap items-center justify-between gap-2 border-b">
           <CardTitle>Chapters</CardTitle>
           <NewChapterModel courseId={data.id} />
         </CardHeader>
@@ -295,18 +295,18 @@ export function CourseStructure({ data }: iAppProps) {
                       onOpenChange={() => toggleChapter(chapter.id)}
                     >
                       <div className="flex items-center justify-between p-3 border-b">
-                        <div className="flex items-center gap-2">
-                          <Button size="icon" variant="ghost" {...listeners}>
-                            <GripVertical className="size-4" />
-                          </Button>
-
-                          <CollapsibleTrigger asChild>
-                            <Button size="icon" variant="ghost">
-                              {chapter.isOpen ? <ChevronDown /> : <ChevronRight />}
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <Button size="icon" variant="ghost" {...listeners} className="shrink-0">
+                              <GripVertical className="size-4" />
                             </Button>
-                          </CollapsibleTrigger>
 
-                          <p className="font-medium">{chapter.title}</p>
+                            <CollapsibleTrigger asChild>
+                              <Button size="icon" variant="ghost" className="shrink-0">
+                                {chapter.isOpen ? <ChevronDown /> : <ChevronRight />}
+                              </Button>
+                            </CollapsibleTrigger>
+
+                            <p className="font-medium truncate min-w-0">{chapter.title}</p>
                         </div>
 
                         <DeleteChapter
@@ -331,19 +331,21 @@ export function CourseStructure({ data }: iAppProps) {
                                 }}
                               >
                                 {(lessonListeners) => (
-                                  <div className="flex items-center justify-between p-2 rounded hover:bg-accent">
-                                    <div className="flex items-center gap-2">
+                                  <div className="flex items-center justify-between p-2 rounded hover:bg-accent gap-2">
+                                    <div className="flex items-center gap-2 min-w-0 flex-1">
                                       <Button
                                         size="icon"
                                         variant="ghost"
+                                        className="shrink-0"
                                         {...lessonListeners}
                                       >
                                         <GripVertical className="size-4" />
                                       </Button>
 
-                                      <FileText className="size-4" />
+                                      <FileText className="size-4 shrink-0" />
 
                                       <Link
+                                        className="truncate min-w-0 text-sm"
                                         href={`/admin/courses/${data.id}/${chapter.id}/${lesson.id}`}
                                       >
                                         {lesson.title}

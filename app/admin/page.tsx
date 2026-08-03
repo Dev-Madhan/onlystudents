@@ -10,8 +10,10 @@ import { AdminCourseCard, AdminCourseCardSkeleton } from "@/app/admin/courses/_c
 import { Suspense } from "react";
 
 export default async function AdminIndexPage() {
-    const stats = await adminGetDashboardStats();
-    const chartData = await adminGetChartData();
+    const [stats, chartData] = await Promise.all([
+        adminGetDashboardStats(),
+        adminGetChartData(),
+    ]);
 
     return (
         <>
@@ -26,7 +28,7 @@ export default async function AdminIndexPage() {
                 
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold">Recent Courses</h2>
+                        <h2 className="text-xl font-semibold font-bricolage">Recent Courses</h2>
                         <Link href="/admin/courses" className={buttonVariants({ variant: "outline" })}>
                             View All Courses
                         </Link>

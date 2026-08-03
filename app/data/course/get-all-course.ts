@@ -1,10 +1,9 @@
 import "server-only";
 import {prisma} from "@/lib/db";
 import {constructUrl} from "@/lib/construct-url";
-import { unstable_noStore as noStore } from "next/cache";
+import { cache } from "react";
 
-export async function getAllCourse() {
-    noStore();
+export const getAllCourse = cache(async function getAllCourse() {
     const data = await prisma.course.findMany({
         where: {
             status: "Published",
@@ -29,7 +28,6 @@ export async function getAllCourse() {
         ...course,
         thumbnailUrl: constructUrl(course.fileKey),
     }));
-}
+});
 
 export type PublicCourseType = Awaited<ReturnType<typeof getAllCourse>>[0]
-

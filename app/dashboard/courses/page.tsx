@@ -2,8 +2,6 @@ import { getAllCourse } from "@/app/data/course/get-all-course";
 import { PublicCourseCard, PublicCourseCardSkeleton } from "@/app/(people)/_components/PublicCourseCard";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
-
 export default function DashboardBrowseCatalogPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

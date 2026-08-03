@@ -71,7 +71,7 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
 
   return (
     <Card className="@container/card">
-      <CardHeader>
+      <CardHeader className="px-4 pt-4 sm:px-6 sm:pt-6">
         <CardTitle>Total Enrollments</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
@@ -79,7 +79,7 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
           </span>
           <span className="@[540px]/card:hidden">Last {timeRange.replace('d', '')} days: {totalEnrollments}</span>
         </CardDescription>
-        <CardAction>
+        <CardAction className="self-center">
           <ToggleGroup
             type="single"
             value={timeRange}
@@ -93,7 +93,7 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
+              className="flex w-[120px] **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               size="sm"
               aria-label="Select a value"
             >

@@ -59,7 +59,7 @@ export default async function SlugPage({ params }: { params: Params }) {
 
         <div className="mt-8 space-y-6">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight font-bricolage">
               {course.title}
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed line-clamp-2 font-serif">
@@ -87,7 +87,7 @@ export default async function SlugPage({ params }: { params: Params }) {
           <Separator className="my-8" />
 
           <div className="space-y-6">
-            <h2 className="text-3xl font-semibold tracking-tight">
+            <h2 className="text-3xl font-semibold tracking-tight font-bricolage">
               Course Description
             </h2>
 
@@ -96,7 +96,7 @@ export default async function SlugPage({ params }: { params: Params }) {
         </div>
         <div className="mt-12 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-semibold tracking-tight">
+            <h2 className="text-3xl font-semibold tracking-tight font-bricolage">
               Course Content
             </h2>
 
@@ -117,32 +117,32 @@ export default async function SlugPage({ params }: { params: Params }) {
                   <CollapsibleTrigger>
                     <div>
                       <CardContent className="p-6 hover:bg-muted/50 transform-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <p className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary font-serif font-semibold">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                            <p className="flex size-8 sm:size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-serif font-semibold text-sm sm:text-base">
                               {index + 1}
                             </p>
-                            <div>
-                              <h3 className="text-xl font-semibold text-left">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-base sm:text-xl font-semibold text-left font-bricolage line-clamp-2 leading-tight">
                                 {chapter.title}
                               </h3>
-                              <p className="text-sm text-muted-foreground mt-1 text-left font-medium font-mono">
+                              <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-1.5 text-left font-medium font-mono truncate">
                                 {chapter.lessons.length} lesson
                                 {chapter.lessons.length !== 1 ? "s" : ""}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                             <Badge
                               variant="outline"
-                              className="text-xs font-mono"
+                              className="text-[10px] sm:text-xs font-mono hidden sm:inline-flex"
                             >
                               {chapter.lessons.length} lesson
                               {chapter.lessons.length !== 1 ? "s" : ""}
                             </Badge>
 
-                            <IconChevronDown className="size-5 text-muted-foreground" />
+                            <IconChevronDown className="size-4 sm:size-5 text-muted-foreground" />
                           </div>
                         </div>
                       </CardContent>
@@ -185,8 +185,8 @@ export default async function SlugPage({ params }: { params: Params }) {
           <Card className="py-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <span className="text-lg font-medium">Price:</span>
-                <span className="text-2xl font-bold text-primary font-mono">
+                <span className="text-lg font-medium font-bricolage">Price:</span>
+                <span className="text-2xl font-bold text-primary font-bricolage">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "INR",
@@ -195,7 +195,7 @@ export default async function SlugPage({ params }: { params: Params }) {
               </div>
 
               <div className="mb-6 space-y-3 rounded-lg bg-muted p-4">
-                <h4 className="font-medium font-mono">What you will get:</h4>
+                <h4 className="font-medium font-bricolage">What you will get:</h4>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
@@ -256,7 +256,7 @@ export default async function SlugPage({ params }: { params: Params }) {
               </div>
 
               <div className="mb-6 space-y-3">
-                <h4 className="font-medium">This course includes:</h4>
+                <h4 className="font-medium font-bricolage">This course includes:</h4>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2 text-sm">
                     <div className="rounded-full bg-green-500/10 text-green-500 p-1">
@@ -282,7 +282,7 @@ export default async function SlugPage({ params }: { params: Params }) {
               </div>
 
               {isEnrolled ? (
-                <Link className={buttonVariants({ className: "w-full" })} href="/dashboard">Watch Course</Link>
+                <Link className={buttonVariants({ className: "w-full" })} href={`/dashboard/${slug}`}>Watch Course</Link>
               ) : (
                 <EnrollmentButton courseId={course.id} />
               )}

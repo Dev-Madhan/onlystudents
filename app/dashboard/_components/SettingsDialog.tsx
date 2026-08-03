@@ -2,7 +2,6 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ThemeToggle } from "@/components/ui/themeToggle";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +11,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SettingsDialogProps {
     open: boolean;
@@ -23,9 +23,20 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     const router = useRouter();
     const user = session?.user;
 
+    const [activeTab, setActiveTab] = useState<"appearance" | "account" | "notifications">("appearance");
+    const [prevTab, setPrevTab] = useState<"appearance" | "account" | "notifications">("appearance");
+
     const [name, setName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [isSubLoading, setIsSubLoading] = useState(false);
+
+    const tabs = ["appearance", "account", "notifications"] as const;
+    const tabIndex = tabs.indexOf(activeTab);
+
+    const handleTabChange = (tab: typeof activeTab) => {
+        setPrevTab(activeTab);
+        setActiveTab(tab);
+    };
 
     // Notification states
     const [courseUpdates, setCourseUpdates] = useState(true);
@@ -60,8 +71,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
     const toggleCourseUpdates = async () => {
         const newVal = !courseUpdates;
-        setCourseUpdates(newVal); // Optimistic UI update
-        
+        setCourseUpdates(newVal);
         try {
             const res = await fetch("/api/user/notifications", {
                 method: "POST",
@@ -82,8 +92,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
     const toggleAccountActivity = async () => {
         const newVal = !accountActivity;
-        setAccountActivity(newVal); // Optimistic UI update
-        
+        setAccountActivity(newVal);
         try {
             const res = await fetch("/api/user/notifications", {
                 method: "POST",
@@ -150,138 +159,168 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[550px] p-0 overflow-hidden">
-                <div className="p-6 pb-4">
+            <DialogContent className="w-full max-w-[calc(100%-2rem)] sm:max-w-[550px] p-0 overflow-hidden">
+                {/* Header */}
+                <div className="px-4 pt-5 pb-3 sm:px-6 sm:pt-6 sm:pb-4">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl">Settings</DialogTitle>
-                        <DialogDescription>
+                        <DialogTitle className="text-xl sm:text-2xl font-bricolage">Settings</DialogTitle>
+                        <DialogDescription className="text-sm font-bricolage">
                             Manage your dashboard preferences and account settings here.
                         </DialogDescription>
                     </DialogHeader>
                 </div>
-                
-                <Tabs defaultValue="appearance" className="w-full">
-                    <div className="px-6 border-b">
-                        <TabsList className="bg-transparent space-x-2 p-0 h-auto">
-                            <TabsTrigger 
-                                value="appearance" 
-                                className="relative border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-md -mb-px"
-                            >
-                                Appearance
-                            </TabsTrigger>
-                            <TabsTrigger 
-                                value="account" 
-                                className="relative border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-md -mb-px"
-                            >
-                                Account
-                            </TabsTrigger>
-                            <TabsTrigger 
-                                value="notifications" 
-                                className="relative border-b-2 border-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:bg-transparent rounded-md -mb-px"
-                            >
-                                Notifications
-                            </TabsTrigger>
-                        </TabsList>
-                    </div>
 
-                    <div className="p-6 pt-4 h-[300px] overflow-y-auto">
-                        <TabsContent value="appearance" className="m-0 space-y-6 animate-in fade-in-50">
-                            <div className="flex items-center justify-between">
-                                <div className="flex flex-col space-y-1">
-                                    <span className="font-semibold text-base">Theme Preference</span>
-                                    <span className="text-sm text-muted-foreground">Customize the theme of the application.</span>
-                                </div>
-                                <ThemeToggle />
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="account" className="m-0 space-y-6 animate-in fade-in-50">
-                            <div className="space-y-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="name">Display Name</Label>
-                                    <div className="flex gap-2">
-                                        <Input 
-                                            id="name" 
-                                            value={name} 
-                                            onChange={(e) => setName(e.target.value)} 
-                                            className="max-w-[250px]" 
+                <div className="w-full">
+                    {/* Tab bar — scrollable horizontally on tiny screens */}
+                    <div className="px-4 sm:px-6 border-b overflow-x-auto">
+                        <div className="flex gap-0 sm:gap-1 p-0 h-auto w-max min-w-full">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab}
+                                    onClick={() => handleTabChange(tab)}
+                                    className={`relative px-3 sm:px-4 pb-3 pt-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap capitalize ${
+                                        activeTab === tab
+                                            ? "text-foreground"
+                                            : "text-muted-foreground hover:text-foreground/70"
+                                    }`}
+                                >
+                                    {tab}
+                                    {activeTab === tab && (
+                                        <motion.div
+                                            layoutId="settings-tab-indicator"
+                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                                         />
-                                        <Button 
-                                            variant="outline" 
-                                            onClick={handleUpdateName} 
-                                            disabled={isSaving || !name || name === user?.name}
-                                        >
-                                            {isSaving ? "Saving..." : "Save"}
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="email">Email Address</Label>
-                                    <div className="flex gap-2">
-                                        <Input id="email" defaultValue={user?.email || ""} key={user?.email || "email"} readOnly className="max-w-[250px] bg-muted" />
-                                    </div>
-                                </div>
-                                <Separator className="my-4" />
-                                <div className="flex flex-col gap-3">
-                                    <Button 
-                                        variant="outline" 
-                                        className="w-fit justify-start"
-                                        onClick={handleManageSubscription}
-                                        disabled={isSubLoading}
-                                    >
-                                        <CreditCard className="size-4 mr-2" />
-                                        {isSubLoading ? "Loading Portal..." : "Manage Subscription"}
-                                    </Button>
-                                    <Button variant="destructive" className="w-fit justify-start" onClick={handleSignOut}>
-                                        <LogOut className="size-4 mr-2" />
-                                        Sign out
-                                    </Button>
-                                </div>
-                            </div>
-                        </TabsContent>
-
-                        <TabsContent value="notifications" className="m-0 space-y-6 animate-in fade-in-50">
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between border rounded-lg p-4">
-                                    <div className="flex flex-col space-y-1">
-                                        <span className="font-semibold flex items-center">
-                                            <Mail className="size-4 mr-2" />
-                                            Course Updates
-                                        </span>
-                                        <span className="text-sm text-muted-foreground">Receive emails when new lessons are added.</span>
-                                    </div>
-                                    <Button 
-                                        variant={courseUpdates ? "secondary" : "outline"} 
-                                        size="sm"
-                                        onClick={toggleCourseUpdates}
-                                        disabled={isNotifLoading}
-                                        className="w-24 transition-colors"
-                                    >
-                                        {courseUpdates ? "Enabled" : "Disabled"}
-                                    </Button>
-                                </div>
-                                <div className="flex items-center justify-between border rounded-lg p-4">
-                                    <div className="flex flex-col space-y-1">
-                                        <span className="font-semibold flex items-center">
-                                            <User className="size-4 mr-2" />
-                                            Account Activity
-                                        </span>
-                                        <span className="text-sm text-muted-foreground">Receive alerts about your account security.</span>
-                                    </div>
-                                    <Button 
-                                        variant={accountActivity ? "secondary" : "outline"} 
-                                        size="sm"
-                                        onClick={toggleAccountActivity}
-                                        disabled={isNotifLoading}
-                                        className="w-24 transition-colors"
-                                    >
-                                        {accountActivity ? "Enabled" : "Disabled"}
-                                    </Button>
-                                </div>
-                            </div>
-                        </TabsContent>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </Tabs>
+
+                    {/* Animated Tab Content */}
+                    <div className="relative px-4 py-4 sm:px-6 sm:py-5 max-h-[65vh] overflow-y-auto overflow-x-hidden">
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.div
+                                key={activeTab}
+                                initial={{ opacity: 0, x: tabs.indexOf(activeTab) > tabs.indexOf(prevTab) ? 24 : -24 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: tabs.indexOf(activeTab) > tabs.indexOf(prevTab) ? -24 : 24 }}
+                                transition={{ type: "spring", bounce: 0, duration: 0.32 }}
+                            >
+                                {/* Appearance Tab */}
+                                {activeTab === "appearance" && (
+                                    <div className="space-y-5">
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div className="flex flex-col space-y-1 min-w-0">
+                                                <span className="font-semibold text-sm sm:text-base font-bricolage">Theme Preference</span>
+                                                <span className="text-xs sm:text-sm text-muted-foreground">Customize the theme of the application.</span>
+                                            </div>
+                                            <ThemeToggle />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Account Tab */}
+                                {activeTab === "account" && (
+                                    <div className="space-y-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="settings-name" className="text-sm font-bricolage">Display Name</Label>
+                                            <div className="flex flex-col sm:flex-row gap-2">
+                                                <Input
+                                                    id="settings-name"
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                    className="flex-1"
+                                                    placeholder="Your display name"
+                                                />
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={handleUpdateName}
+                                                    disabled={isSaving || !name || name === user?.name}
+                                                    className="w-full sm:w-auto shrink-0"
+                                                >
+                                                    {isSaving ? "Saving..." : "Save"}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="settings-email" className="text-sm font-bricolage">Email Address</Label>
+                                            <Input
+                                                id="settings-email"
+                                                defaultValue={user?.email || ""}
+                                                key={user?.email || "email"}
+                                                readOnly
+                                                className="bg-muted w-full font-bricolage"
+                                            />
+                                        </div>
+                                        <Separator />
+                                        <div className="flex flex-col gap-3">
+                                            <Button
+                                                variant="outline"
+                                                className="w-full sm:w-fit justify-center sm:justify-start"
+                                                onClick={handleManageSubscription}
+                                                disabled={isSubLoading}
+                                            >
+                                                <CreditCard className="size-4 mr-2" />
+                                                {isSubLoading ? "Loading Portal..." : "Manage Subscription"}
+                                            </Button>
+                                            <Button
+                                                variant="destructive"
+                                                className="w-full sm:w-fit justify-center sm:justify-start"
+                                                onClick={handleSignOut}
+                                            >
+                                                <LogOut className="size-4 mr-2" />
+                                                Sign out
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Notifications Tab */}
+                                {activeTab === "notifications" && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-start sm:items-center justify-between gap-3 border rounded-xl p-4">
+                                            <div className="flex flex-col space-y-1 min-w-0 flex-1">
+                                                <span className="font-semibold text-sm flex items-center gap-2 font-bricolage">
+                                                    <Mail className="size-4 shrink-0" />
+                                                    Course Updates
+                                                </span>
+                                                <span className="text-xs text-muted-foreground">Receive emails when new lessons are added.</span>
+                                            </div>
+                                            <Button
+                                                variant={courseUpdates ? "secondary" : "outline"}
+                                                size="sm"
+                                                onClick={toggleCourseUpdates}
+                                                disabled={isNotifLoading}
+                                                className="w-24 shrink-0 transition-colors"
+                                            >
+                                                {courseUpdates ? "Enabled" : "Disabled"}
+                                            </Button>
+                                        </div>
+                                        <div className="flex items-start sm:items-center justify-between gap-3 border rounded-xl p-4">
+                                            <div className="flex flex-col space-y-1 min-w-0 flex-1">
+                                                <span className="font-semibold text-sm flex items-center gap-2 font-bricolage">
+                                                    <User className="size-4 shrink-0" />
+                                                    Account Activity
+                                                </span>
+                                                <span className="text-xs text-muted-foreground">Receive alerts about your account security.</span>
+                                            </div>
+                                            <Button
+                                                variant={accountActivity ? "secondary" : "outline"}
+                                                size="sm"
+                                                onClick={toggleAccountActivity}
+                                                disabled={isNotifLoading}
+                                                className="w-24 shrink-0 transition-colors"
+                                            >
+                                                {accountActivity ? "Enabled" : "Disabled"}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
+                </div>
             </DialogContent>
         </Dialog>
     );

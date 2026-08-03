@@ -10,8 +10,11 @@ export default async function EditRouter({params}: { params: Params }) {
     const {courseId} = await params;
     const data = await adminGetCourse(courseId);
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-8">Edit Course: <span className="text-primary underline">{data.title}</span></h1>
+        <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-8 leading-tight break-words">
+                Edit Course:{" "}
+                <span className="text-primary underline">{data.title}</span>
+            </h1>
 
             <Tabs defaultValue="basic-info">
                 <TabsList className="grid grid-cols-2 w-full">
