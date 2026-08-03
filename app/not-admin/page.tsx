@@ -1,7 +1,17 @@
+import type { Metadata } from "next";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {ArrowLeft, ShieldX} from "lucide-react";
 import Link from "next/link";
 import {buttonVariants} from "@/components/ui/button";
+
+export const metadata: Metadata = {
+    title: "Access Restricted",
+    description: "You do not have admin privileges to access this page.",
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 export default function NotAdminRoute(){
     return(

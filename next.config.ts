@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    // Gzip compression for smaller payloads
+    compress: true,
+
+    // Remove X-Powered-By header (security + lighter responses)
+    poweredByHeader: false,
+
     // Client-side router cache: re-use pages visited within these windows
     // instead of re-fetching every single navigation.
     experimental: {
@@ -23,6 +29,33 @@ const nextConfig: NextConfig = {
                 protocol: 'https',
             },
         ],
+    },
+
+    // Security & performance headers
+    async headers() {
+        return [
+            {
+                source: "/(.*)",
+                headers: [
+                    {
+                        key: "X-Content-Type-Options",
+                        value: "nosniff",
+                    },
+                    {
+                        key: "Referrer-Policy",
+                        value: "strict-origin-when-cross-origin",
+                    },
+                    {
+                        key: "X-Frame-Options",
+                        value: "DENY",
+                    },
+                    {
+                        key: "Permissions-Policy",
+                        value: "camera=(), microphone=(), geolocation=()",
+                    },
+                ],
+            },
+        ];
     },
 };
 

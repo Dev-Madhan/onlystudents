@@ -1,8 +1,19 @@
+import type { Metadata } from "next";
 import { getAllCourse } from "../data/course/get-all-course";
 import { getEnrolledCourses } from "../data/user/get-enrolled-courses";
 import { EmptyState } from "@/components/general/EmptyState";
 import { PublicCourseCard } from "@/app/(people)/_components/PublicCourseCard";
 import { CourseProgressCard } from "./_components/CourseProgressCard";
+
+export const metadata: Metadata = {
+  title: "My Dashboard",
+  description:
+    "View your enrolled courses, track your learning progress, and discover new courses on Only Students.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function DashboardPage() {
   const [courses, enrolledCourses] = await Promise.all([
@@ -40,7 +51,7 @@ export default async function DashboardPage() {
 
       <section className="mt-10">
         <div className="flex flex-col gap-2 mb-4">
-          <h1 className="text-3xl font-bold font-bricolage">Available Courses</h1>
+          <h2 className="text-3xl font-bold font-bricolage">Available Courses</h2>
           <p className="text-muted-foreground">
             Here you can see all the courses you can purchase
           </p>

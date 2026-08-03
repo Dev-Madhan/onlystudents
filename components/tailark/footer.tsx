@@ -18,6 +18,7 @@ export default function FooterSection() {
                     </span>
 
                     {/* Links */}
+                    <nav aria-label="Footer navigation">
                     <div className="flex flex-wrap justify-center gap-5 text-sm md:justify-end md:gap-6">
                         {links.map((link, index) => (
                             <Link
@@ -29,6 +30,7 @@ export default function FooterSection() {
                             </Link>
                         ))}
                     </div>
+                    </nav>
 
                 </div>
             </div>

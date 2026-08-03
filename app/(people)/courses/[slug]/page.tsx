@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getInduvidualCourses } from "@/app/data/course/get-courses";
 import { env } from "@/lib/env";
 import { Badge } from "@/components/ui/badge";
@@ -23,16 +24,87 @@ import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
 import Link from "next/link";
 import { EnrollmentButton } from "@/app/(people)/courses/[slug]/_components/EnrollmentButton";
 import { buttonVariants } from "@/components/ui/button";
+import { CourseJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 
 type Params = Promise<{ slug: string }>;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  try {
+    const course = await getInduvidualCourses(slug);
+    const thumbnailUrl = `https://${env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.t3.storage.dev/${course.fileKey}`;
+
+    return {
+      title: course.title,
+      description: course.smallDescription,
+      openGraph: {
+        title: `${course.title} | Only Students`,
+        description: course.smallDescription,
+        url: `https://only-student.vercel.app/courses/${slug}`,
+        type: "website",
+        images: [
+          {
+            url: thumbnailUrl,
+            width: 1200,
+            height: 630,
+            alt: course.title,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${course.title} | Only Students`,
+        description: course.smallDescription,
+        images: [thumbnailUrl],
+      },
+      alternates: {
+        canonical: `https://only-student.vercel.app/courses/${slug}`,
+      },
+    };
+  } catch {
+    return {
+      title: "Course Not Found",
+      description: "The requested course could not be found.",
+    };
+  }
+}
 
 export default async function SlugPage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = await getInduvidualCourses(slug);
   const isEnrolled = await checkIfCourseBought(course.id);
+  const totalLessons = course.chapters.reduce(
+    (total, chapter) => total + chapter.lessons.length,
+    0,
+  );
+  const thumbnailUrl = `https://${env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.t3.storage.dev/${course.fileKey}`;
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 mt-5">
+    <>
+      <CourseJsonLd
+        title={course.title}
+        description={course.smallDescription}
+        thumbnailUrl={thumbnailUrl}
+        slug={slug}
+        category={course.category}
+        level={course.level}
+        duration={course.duration}
+        price={course.price}
+        totalLessons={totalLessons}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Home", url: "https://only-student.vercel.app" },
+          { name: "Courses", url: "https://only-student.vercel.app/courses" },
+          { name: course.title, url: `https://only-student.vercel.app/courses/${slug}` },
+        ]}
+      />
+    <article className="grid grid-cols-1 gap-8 lg:grid-cols-3 mt-5">
       <div className="order-1 lg:col-span-2">
         <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg bg-black">
           {course.demoVideoKey ? (
@@ -294,6 +366,7 @@ export default async function SlugPage({ params }: { params: Params }) {
           </Card>
         </div>
       </div>
-    </div>
+    </article>
+    </>
   );
 }

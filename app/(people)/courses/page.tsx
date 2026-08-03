@@ -1,6 +1,23 @@
+import type { Metadata } from "next";
 import {getAllCourse} from "@/app/data/course/get-all-course";
 import {PublicCourseCard, PublicCourseCardSkeleton} from "@/app/(people)/_components/PublicCourseCard";
 import {Suspense} from "react";
+
+export const metadata: Metadata = {
+    title: "Explore Courses",
+    description:
+        "Browse our curated collection of expert-led online courses in web development, design, programming, and more. Find the perfect course to level up your skills.",
+    openGraph: {
+        title: "Explore Courses | Only Students",
+        description:
+            "Browse expert-led online courses and start learning today with Only Students.",
+        url: "https://only-student.vercel.app/courses",
+    },
+    alternates: {
+        canonical: "https://only-student.vercel.app/courses",
+    },
+};
+
 
 export default function PublicCoursesRoute() {
   return (

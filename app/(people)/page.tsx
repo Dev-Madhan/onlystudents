@@ -1,8 +1,25 @@
 
+import type { Metadata } from "next";
 import {buttonVariants} from "@/components/ui/button";
 import {Badge} from "@/components/ui/badge";
 import Link from "next/link";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+
+export const metadata: Metadata = {
+    title: "Transform Your Educational Journey",
+    description:
+        "Experience a fresh approach to education with our dynamic, interactive learning management system. Unlock expert-led courses in web development, design, and more — accessible anytime, anywhere.",
+    openGraph: {
+        title: "Transform Your Educational Journey | Only Students",
+        description:
+            "Unlock expert-led courses in web development, design, and more. Start learning today with Only Students.",
+        url: "https://only-student.vercel.app",
+    },
+    alternates: {
+        canonical: "https://only-student.vercel.app",
+    },
+};
+
 
 interface featureProps {
     title: string;

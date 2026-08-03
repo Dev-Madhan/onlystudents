@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { SectionCards } from "@/components/sidebar/section-cards";
 import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactive";
 import Link from "next/link";
@@ -8,6 +9,15 @@ import { adminGetRecentCourses } from "@/app/data/admin/admin-get-recent-courses
 import { EmptyState } from "@/components/general/EmptyState";
 import { AdminCourseCard, AdminCourseCardSkeleton } from "@/app/admin/courses/_components/AdminCourseCard";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+    title: "Admin Dashboard",
+    description: "Manage your courses, students, and sales on Only Students admin panel.",
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 export default async function AdminIndexPage() {
     const [stats, chartData] = await Promise.all([

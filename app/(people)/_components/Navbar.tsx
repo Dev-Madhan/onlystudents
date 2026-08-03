@@ -31,6 +31,7 @@ export default function Navbar() {
             <div className="flex h-16 items-center justify-between gap-4">
                 {/* Left: Navigation (hidden on mobile) */}
                 <div className="hidden md:flex flex-1 items-center gap-2">
+                    <nav aria-label="Main navigation">
                     <NavigationMenu>
                         <NavigationMenuList className="gap-4">
                             {navigationLinks.map((link, index) => {
@@ -53,6 +54,7 @@ export default function Navbar() {
                             })}
                         </NavigationMenuList>
                     </NavigationMenu>
+                    </nav>
                 </div>
 
                 {/* Center: Logo */}
