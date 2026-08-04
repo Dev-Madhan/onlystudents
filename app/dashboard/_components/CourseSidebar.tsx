@@ -1,15 +1,13 @@
 "use client";
 
-import { Play, ChevronDown } from "lucide-react";
+import { Play, ChevronDown, Award, Lock } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { IconPlayerPlay } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LessonItem } from "./LessonItem";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { CourseSidebarDataType } from "@/app/data/course/get-course-sidebar-data";
-
 import { useCourseProgress } from "@/hooks/use-course-progress";
 
 interface iAppProps {
@@ -22,6 +20,7 @@ export function CourseSidebar({ course, closeButton }: iAppProps) {
   const currentLessonId = pathname.split("/").pop();
 
   const { totalLessons, completedLessons, progressPercentage } = useCourseProgress(course.chapters);
+  const isCourseCompleted = totalLessons > 0 && completedLessons === totalLessons;
 
   return (
     <div className="flex flex-col h-full">
@@ -96,6 +95,35 @@ export function CourseSidebar({ course, closeButton }: iAppProps) {
           ))}
         </div>
       </div>
+
+      {/* Get Certificate Button */}
+      <div className="p-4 border-t border-border shrink-0">
+        {isCourseCompleted ? (
+          <Button id="get-certificate-btn" asChild className="w-full">
+            <Link href={`/dashboard/${course.slug}/certificate`}>
+              <Award className="size-4" />
+              Get Certificate
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            id="get-certificate-btn-locked"
+            variant="outline"
+            disabled
+            className="w-full"
+            title={`Complete all ${totalLessons} lessons to unlock your certificate`}
+          >
+            <Lock className="size-4" />
+            Get Certificate
+          </Button>
+        )}
+        {!isCourseCompleted && (
+          <p className="text-[10px] text-muted-foreground text-center mt-2 font-bricolage">
+            Complete all lessons to unlock
+          </p>
+        )}
+      </div>
     </div>
   );
 }
+

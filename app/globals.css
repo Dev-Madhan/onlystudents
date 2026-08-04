@@ -219,3 +219,35 @@ body {
         color: var(--primary);
     }
 }
+
+/* ── Certificate print styles ── */
+@media print {
+  /* Hide everything except the canvas certificate */
+  body > * {
+    display: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Make the canvas certificate fill the entire print page */
+  #certificate-card {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 1 !important;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+}
