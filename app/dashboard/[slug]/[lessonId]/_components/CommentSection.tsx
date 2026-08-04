@@ -9,6 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { postComment, editComment, deleteComment } from "./comment-actions";
 import { toast } from "sonner";
 import { Loader2, Reply, MessageSquare, Edit2, Trash2 } from "lucide-react";
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface CommentSectionProps {
     lessonId: string;
@@ -100,6 +109,7 @@ function CommentItem({
     const [replyText, setReplyText] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(comment.text);
+    const [deleteOpen, setDeleteOpen] = useState(false);
     const [pending, startTransition] = useTransition();
 
     function onReplySubmit() {
@@ -133,17 +143,16 @@ function CommentItem({
         });
     }
 
-    function onDelete() {
-        if (confirm("Are you sure you want to delete this comment?")) {
-            startTransition(async () => {
-                const result = await deleteComment(comment.id, courseSlug, lessonId);
-                if (result.status === "success") {
-                    toast.success(result.message);
-                } else {
-                    toast.error(result.message);
-                }
-            });
-        }
+    function onDeleteConfirm() {
+        startTransition(async () => {
+            const result = await deleteComment(comment.id, courseSlug, lessonId);
+            if (result.status === "success") {
+                toast.success(result.message);
+                setDeleteOpen(false);
+            } else {
+                toast.error(result.message);
+            }
+        });
     }
 
     const isOwner = currentUserId === comment.userId;
@@ -225,12 +234,30 @@ function CommentItem({
                                         </button>
                                     )}
                                     <button
-                                        onClick={onDelete}
+                                        onClick={() => setDeleteOpen(true)}
                                         className="text-xs font-medium text-destructive hover:text-destructive/80 transition-colors flex items-center gap-1"
                                     >
                                         <Trash2 className="size-3" />
                                         Delete
                                     </button>
+
+                                    <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete your comment.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+                                                <Button onClick={onDeleteConfirm} disabled={pending} variant="destructive">
+                                                    {pending ? <Loader2 className="size-3 mr-2 animate-spin" /> : null}
+                                                    {pending ? "Deleting..." : "Delete"}
+                                                </Button>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </>
                             )}
                         </div>
@@ -296,6 +323,7 @@ function ReplyItem({
 }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(reply.text);
+    const [deleteOpen, setDeleteOpen] = useState(false);
     const [pending, startTransition] = useTransition();
 
     function onEditSubmit() {
@@ -313,17 +341,16 @@ function ReplyItem({
         });
     }
 
-    function onDelete() {
-        if (confirm("Are you sure you want to delete this reply?")) {
-            startTransition(async () => {
-                const result = await deleteComment(reply.id, courseSlug, lessonId);
-                if (result.status === "success") {
-                    toast.success(result.message);
-                } else {
-                    toast.error(result.message);
-                }
-            });
-        }
+    function onDeleteConfirm() {
+        startTransition(async () => {
+            const result = await deleteComment(reply.id, courseSlug, lessonId);
+            if (result.status === "success") {
+                toast.success(result.message);
+                setDeleteOpen(false);
+            } else {
+                toast.error(result.message);
+            }
+        });
     }
 
     const isOwner = currentUserId === reply.userId;
@@ -394,12 +421,30 @@ function ReplyItem({
                             </button>
                         )}
                         <button
-                            onClick={onDelete}
+                            onClick={() => setDeleteOpen(true)}
                             className="text-xs font-medium text-destructive hover:text-destructive/80 transition-colors flex items-center gap-1"
                         >
                             <Trash2 className="size-3" />
                             Delete
                         </button>
+
+                        <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete your reply.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+                                    <Button onClick={onDeleteConfirm} disabled={pending} variant="destructive">
+                                        {pending ? <Loader2 className="size-3 mr-2 animate-spin" /> : null}
+                                        {pending ? "Deleting..." : "Delete"}
+                                    </Button>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 )}
             </div>
