@@ -2,6 +2,31 @@
 
 import { Card } from '@/components/ui/card'
 import { Award, BookOpen, GraduationCap, Pause, Play } from 'lucide-react'
+import { motion, Variants } from 'framer-motion'
+
+const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.15,
+            delayChildren: 0.1,
+        }
+    }
+}
+
+const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20, filter: "blur(5px)" },
+    show: {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        transition: {
+            duration: 0.8,
+            ease: [0.25, 1, 0.5, 1],
+        }
+    }
+}
 
 export default function Features() {
     return (
@@ -28,21 +53,28 @@ export default function Features() {
                 .animate-pulse-ring { animation: pulse-ring 3s ease-in-out infinite; }
                 .animate-dot-orbit { animation: dot-orbit 8s linear infinite; }
             `}</style>
-            <div className="mx-auto max-w-6xl px-6">
-                <div className="text-center">
+            <motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-100px" }}
+                className="mx-auto max-w-6xl px-6"
+            >
+                <motion.div variants={itemVariants} className="text-center">
                     <h2 className="font-mono text-3xl md:text-4xl font-bold tracking-tight">
                         Why Choose Only Students
                     </h2>
                     <p className="text-muted-foreground mt-4 max-w-2xl mx-auto font-serif md:text-lg">
                         Everything you need to learn, grow, and succeed — all in one place.
                     </p>
-                </div>
+                </motion.div>
 
                 {/* Bento Grid */}
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-auto md:auto-rows-[280px]">
 
                     {/* Card 1: Structured Learning — spans 2 columns */}
-                    <Card className="md:col-span-2 p-6 flex flex-col justify-between overflow-hidden min-h-[320px] md:min-h-0">
+                    <motion.div variants={itemVariants} className="md:col-span-2">
+                        <Card className="h-full p-6 flex flex-col justify-between overflow-hidden min-h-[320px] md:min-h-0">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-mono font-semibold text-lg">Structured Learning</h3>
                             <p className="text-muted-foreground font-serif text-sm max-w-md">
@@ -85,9 +117,11 @@ export default function Features() {
                             </div>
                         </div>
                     </Card>
+                    </motion.div>
 
                     {/* Card 2: Live Progress — tall, spans 2 rows */}
-                    <Card className="md:row-span-2 p-6 flex flex-col overflow-hidden min-h-[380px] md:min-h-0">
+                    <motion.div variants={itemVariants} className="md:row-span-2">
+                        <Card className="h-full p-6 flex flex-col overflow-hidden min-h-[380px] md:min-h-0">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-mono font-semibold text-lg">Live Progress</h3>
                             <p className="text-muted-foreground font-serif text-sm">
@@ -147,9 +181,11 @@ export default function Features() {
                             </div>
                         </div>
                     </Card>
+                    </motion.div>
 
                     {/* Card 3: Self-Paced Study — spans 2 columns */}
-                    <Card className="md:col-span-2 p-6 flex flex-col justify-between overflow-hidden min-h-[320px] md:min-h-0">
+                    <motion.div variants={itemVariants} className="md:col-span-2">
+                        <Card className="h-full p-6 flex flex-col justify-between overflow-hidden min-h-[320px] md:min-h-0">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-mono font-semibold text-lg">Self-Paced Study</h3>
                             <p className="text-muted-foreground font-serif text-sm max-w-md">
@@ -203,12 +239,13 @@ export default function Features() {
                             </div>
                         </div>
                     </Card>
+                    </motion.div>
 
                 </div>
 
                 {/* Bottom full-width card: Verified Certificates */}
-                <div className="mt-4">
-                    <Card className="p-8 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                <motion.div variants={itemVariants} className="mt-4">
+                    <Card className="h-full p-8 flex flex-col md:flex-row items-center gap-8 md:gap-12">
                         <div className="pointer-events-none relative flex size-32 shrink-0 items-center justify-center">
                             <Award className="absolute inset-0 size-full stroke-[0.3px] opacity-10 text-primary" />
                             <Award className="size-20 stroke-[0.5px] text-primary" />
@@ -220,8 +257,8 @@ export default function Features() {
                             </p>
                         </div>
                     </Card>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
         </section>
     )
 }

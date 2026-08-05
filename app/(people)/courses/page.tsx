@@ -7,6 +7,8 @@ import { headers } from "next/headers";
 import { getEnrolledCoursesByUserId, EnrolledCourseType } from "@/app/data/user/get-enrolled-courses";
 import { CourseProgressCard } from "@/app/dashboard/_components/CourseProgressCard";
 import { EmptyState } from "@/components/general/EmptyState";
+import { CourseSearch } from "@/app/(people)/_components/CourseSearch";
+import { CourseAnimatedGrid, CourseAnimatedGridItem } from "@/app/(people)/courses/_components/CourseAnimatedGrid";
 
 export const metadata: Metadata = {
     title: "Explore Courses",
@@ -24,26 +26,41 @@ export const metadata: Metadata = {
 };
 
 
-export default function PublicCoursesRoute() {
+export default async function PublicCoursesRoute(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const searchParams = await props.searchParams;
+  const query = typeof searchParams.q === 'string' ? searchParams.q : "";
+
   return (
       <div className="mt-5 mb-10">
           <Suspense fallback={<LoadingSkeletonLayout />}>
-              <RenderCourses />
+              <RenderCourses query={query} searchElement={<CourseSearch />} />
           </Suspense>
       </div>
   );
 }
 
-async function RenderCourses(){
+async function RenderCourses({ query, searchElement }: { query: string, searchElement: React.ReactNode }){
     const session = await auth.api.getSession({
         headers: await headers(),
     });
 
-    const courses = await getAllCourse();
+    let courses = await getAllCourse();
     let enrolledCourses: EnrolledCourseType[] = [];
 
     if (session?.user) {
         enrolledCourses = await getEnrolledCoursesByUserId(session.user.id);
+    }
+
+    if (query) {
+        const lowerQuery = query.toLowerCase();
+        courses = courses.filter((c) =>
+            c.title.toLowerCase().includes(lowerQuery) ||
+            c.smallDescription?.toLowerCase().includes(lowerQuery)
+        );
+        enrolledCourses = enrolledCourses.filter((e) =>
+            e.course.title.toLowerCase().includes(lowerQuery) ||
+            e.course.smallDescription?.toLowerCase().includes(lowerQuery)
+        );
     }
 
     const unEnrolledCourses = courses.filter(
@@ -54,26 +71,33 @@ async function RenderCourses(){
         <div className="flex flex-col gap-12">
             {enrolledCourses.length > 0 && (
                 <div className="flex flex-col space-y-6">
-                    <div className="flex flex-col space-y-2">
-                        <h2 className="text-3xl font-bold tracking-tight">Your Enrolled Courses</h2>
-                        <p className="text-muted-foreground font-serif">Continue your learning journey right from here.</p>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 space-y-2 sm:space-y-0">
+                        <div className="flex flex-col space-y-2">
+                            <h2 className="text-3xl font-bold tracking-tight">Your Enrolled Courses</h2>
+                            <p className="text-muted-foreground font-serif">Continue your learning journey right from here.</p>
+                        </div>
+                        {searchElement}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <CourseAnimatedGrid>
                         {enrolledCourses.map((enrollment) => (
-                            <CourseProgressCard 
-                                key={enrollment.course.id} 
-                                data={enrollment} 
-                                linkPrefix="/dashboard" 
-                            />
+                            <CourseAnimatedGridItem key={enrollment.course.id} id={enrollment.course.id}>
+                                <CourseProgressCard 
+                                    data={enrollment} 
+                                    linkPrefix="/dashboard" 
+                                />
+                            </CourseAnimatedGridItem>
                         ))}
-                    </div>
+                    </CourseAnimatedGrid>
                 </div>
             )}
 
             <div className="flex flex-col space-y-6">
-                <div className="flex flex-col space-y-2">
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Explore Courses</h1>
-                    <p className="text-muted-foreground font-serif">Explore a wide range of courses created to help you learn, grow, and reach your goals.</p>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 space-y-2 sm:space-y-0">
+                    <div className="flex flex-col space-y-2">
+                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Explore Courses</h1>
+                        <p className="text-muted-foreground font-serif">Explore a wide range of courses created to help you learn, grow, and reach your goals.</p>
+                    </div>
+                    {enrolledCourses.length === 0 && searchElement}
                 </div>
                 {unEnrolledCourses.length === 0 ? (
                     <EmptyState
@@ -83,11 +107,13 @@ async function RenderCourses(){
                         href="/dashboard"
                     />
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <CourseAnimatedGrid>
                         {unEnrolledCourses.map((course) => (
-                            <PublicCourseCard key={course.id} data={course as any} />
+                            <CourseAnimatedGridItem key={course.id} id={course.id}>
+                                <PublicCourseCard data={course as any} />
+                            </CourseAnimatedGridItem>
                         ))}
-                    </div>
+                    </CourseAnimatedGrid>
                 )}
             </div>
         </div>

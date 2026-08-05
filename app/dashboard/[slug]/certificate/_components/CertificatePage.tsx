@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CertificateDataType } from "@/app/data/course/get-certificate-data";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Download,
   ArrowLeft,
@@ -249,12 +250,10 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
       {/* ── Top nav (hidden on print) ─────────────────────────────────── */}
       <div className="no-print border-b border-border bg-card/60 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/dashboard/${data.course.slug}`}>
-              <ArrowLeft className="size-4" />
-              Back to Course
-            </Link>
-          </Button>
+          <Link href={`/dashboard/${data.course.slug}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            <ArrowLeft className="size-4" />
+            Back to Course
+          </Link>
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-md font-medium border border-emerald-500/20">
               <ShieldCheck className="size-3.5" />
@@ -370,17 +369,13 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
               : <Download className="size-4" />}
             Download Certificate
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            asChild
-            className="w-full sm:w-auto"
+          <Link 
+            href="/dashboard"
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full sm:w-auto")}
           >
-            <Link href="/dashboard">
-              <BookOpen className="size-4" />
-              Back to Dashboard
-            </Link>
-          </Button>
+            <BookOpen className="size-4" />
+            Back to Dashboard
+          </Link>
         </div>
 
       </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { InfiniteSlider } from "@/components/sections/infinite-slider";
 import {
@@ -5,6 +7,28 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from "@/components/ui/avatar";
+import { motion, Variants } from "framer-motion";
+
+const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.15,
+            delayChildren: 0.1,
+        }
+    }
+};
+
+const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20, filter: "blur(5px)" },
+    show: {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1] }
+    }
+};
 
 type Testimonial = {
 	quote: string;
@@ -90,19 +114,26 @@ const thirdColumn = testimonials.slice(6, 9);
 export function TestimonialsSection() {
 	return (
 		<section className="relative py-10">
-			<div className="mx-auto max-w-5xl">
+			<motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-100px" }}
+                className="mx-auto max-w-5xl"
+            >
 				<div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4">
 
 
-					<h2 className="text-center font-bold text-3xl tracking-tighter lg:text-4xl">
+					<motion.h2 variants={itemVariants} className="text-center font-bold text-3xl tracking-tighter lg:text-4xl">
 						Loved by students worldwide
-					</h2>
-					<p className="text-center text-muted-foreground text-sm">
+					</motion.h2>
+					<motion.p variants={itemVariants} className="text-center text-muted-foreground text-sm">
 						Join thousands of learners who are advancing their careers on our platform.
-					</p>
+					</motion.p>
 				</div>
 
-				<div
+				<motion.div
+                    variants={itemVariants}
 					className={cn(
 						"mt-10 flex max-h-160 justify-center gap-6 overflow-hidden",
 						"mask-[linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)]"
@@ -142,8 +173,8 @@ export function TestimonialsSection() {
 							/>
 						))}
 					</InfiniteSlider>
-				</div>
-			</div>
+				</motion.div>
+			</motion.div>
 		</section>
 	);
 }

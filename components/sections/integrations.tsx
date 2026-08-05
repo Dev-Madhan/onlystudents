@@ -1,4 +1,49 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { motion, Variants } from "framer-motion";
+
+const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1,
+            delayChildren: 0.1,
+        }
+    }
+};
+
+const tileContainerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.05,
+            delayChildren: 0.3,
+        }
+    }
+};
+
+const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20, filter: "blur(5px)" },
+    show: {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        transition: { duration: 0.8, ease: [0.25, 1, 0.5, 1] }
+    }
+};
+
+const tileVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.8, filter: "blur(5px)" },
+    show: {
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        transition: { duration: 0.5, ease: [0.25, 1, 0.5, 1] }
+    }
+};
 
 type LogoType = {
 	src: string;
@@ -15,33 +60,43 @@ type TileData = {
 export function Integrations() {
 	return (
 		<section className="bg-background py-24">
-			<div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center">
+			<motion.div 
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, margin: "-100px" }}
+                className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center"
+            >
 				{/* Left Content */}
-				<div className="max-w-xl space-y-5 text-center md:text-left mx-auto md:mx-0">
+				<motion.div variants={itemVariants} className="max-w-xl space-y-5 text-center md:text-left mx-auto md:mx-0">
 					<h2 className="font-mono text-3xl md:text-4xl font-bold tracking-tight text-foreground">
 						Extend Your LMS Ecosystem
 					</h2>
 					<p className="font-serif text-muted-foreground md:text-lg leading-8">
 						Only Students connects seamlessly with your favorite educational tools. Import course materials, sync assignments, and manage your entire learning environment from one unified platform.
 					</p>
-				</div>
+				</motion.div>
 
 				{/* Right Content - Visual */}
 				<div className="w-full overflow-hidden flex justify-center md:justify-end py-4">
-					<div className="mask-[radial-gradient(ellipse_at_center,black,black,transparent)] relative size-[360px] scale-[0.85] sm:scale-100 origin-center md:origin-right shrink-0">
+					<motion.div 
+                        variants={tileContainerVariants}
+                        className="mask-[radial-gradient(ellipse_at_center,black,black,transparent)] relative size-[360px] scale-[0.85] sm:scale-100 origin-center md:origin-right shrink-0"
+                    >
 						{tiles.map((tile) => (
 							<IntegrationCard key={`${tile.row}_${tile.col}`} {...tile} />
 						))}
-					</div>
+					</motion.div>
 				</div>
-			</div>
+			</motion.div>
 		</section>
 	);
 }
 
 function IntegrationCard({ row, col, logo }: TileData) {
 	return (
-		<div
+		<motion.div
+            variants={tileVariants}
 			className={cn(
 				"absolute flex size-18 items-center justify-center rounded-md border-2 border-border",
 				logo
@@ -65,7 +120,7 @@ function IntegrationCard({ row, col, logo }: TileData) {
 					width={40}
 				/>
 			)}
-		</div>
+		</motion.div>
 	);
 }
 
