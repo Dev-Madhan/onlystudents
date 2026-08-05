@@ -220,6 +220,22 @@ body {
     }
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 0.6rem;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background-color: color-mix(in oklch, var(--primary) 25%, transparent);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in oklch, var(--primary) 50%, transparent);
+}
+
 /* ── Certificate print styles ── */
 @media print {
   /* Hide everything except the canvas certificate */
