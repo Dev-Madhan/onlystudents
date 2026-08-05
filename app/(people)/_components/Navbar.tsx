@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { BookIcon, HouseIcon, LayoutDashboardIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { ThemeToggle } from "@/components/ui/themeToggle";
 import { UserDropdown } from "@/app/(people)/_components/UserDropdown";
@@ -85,7 +86,7 @@ export default function Navbar() {
                             >
                                 Login
                             </Link>
-                            <Link href="/login" className={buttonVariants()}>
+                            <Link href="/login" className={cn(buttonVariants(), "hidden sm:inline-flex")}>
                                 Get Started
                             </Link>
                         </>

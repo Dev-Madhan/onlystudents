@@ -62,7 +62,7 @@ export default function HeroSection() {
                                     <Link
                                         href="#link"
                                         className="group mx-auto flex w-fit items-center gap-2 rounded-full border-2 border-border bg-background p-1 pl-4 pr-1 text-sm font-medium shadow-sm">
-                                        <span className="text-foreground pl-1">The Evolution of Online Education</span>
+                                        <span className="text-foreground pl-1">Unlock Your Potential</span>
 
                                         <div className="ml-2 size-6 overflow-hidden rounded-full bg-muted duration-500 group-hover:bg-primary">
                                             <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
@@ -77,19 +77,25 @@ export default function HeroSection() {
                                     </Link>
                                 </motion.div>
 
-                                <motion.h1 variants={itemVariants} className="mx-auto mt-6 w-full font-sans text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:mt-12 xl:whitespace-nowrap xl:text-7xl">
-                                    Transform Your Educational Journey
+                                <motion.h1 variants={itemVariants} className="mx-auto mt-6 w-full font-sans text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:mt-12 xl:whitespace-nowrap xl:text-7xl">
+                                    Empower Your <br className="block sm:hidden" />
+                                    Learning Journey
                                 </motion.h1>
                                 <motion.p variants={itemVariants} className="text-muted-foreground mx-auto mt-4 max-w-2xl text-balance md:text-lg">
-                                    Experience a fresh approach to education. Unlock top-tier courses with our interactive platform, accessible anytime, anywhere.
+                                    <span className="sm:hidden">
+                                        Unlock top-tier interactive courses, accessible anytime, anywhere.
+                                    </span>
+                                    <span className="hidden sm:inline">
+                                        Experience a fresh approach to education. Unlock top-tier courses with our interactive platform, accessible anytime, anywhere.
+                                    </span>
                                 </motion.p>
 
-                                <motion.div variants={itemVariants} className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                                    <Link href="/courses" className={buttonVariants({ variant: 'default' })}>
+                                <motion.div variants={itemVariants} className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                                    <Link href="/courses" className={buttonVariants({ variant: 'default', className: 'w-full sm:w-auto' })}>
                                         <span className="text-nowrap">Explore Courses</span>
                                     </Link>
 
-                                    <Link href="/login" className={buttonVariants({ variant: 'ghost' })}>
+                                    <Link href="/login" className={buttonVariants({ variant: 'ghost', className: 'w-full sm:w-auto' })}>
                                         <span className="text-nowrap">Sign in</span>
                                     </Link>
                                 </motion.div>
