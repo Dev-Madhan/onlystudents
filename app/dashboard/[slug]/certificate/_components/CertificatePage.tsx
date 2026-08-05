@@ -15,6 +15,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import signatureImg from "@/app/src/assets/signature/Signature.png";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
+
+const interFont = Inter({ subsets: ["latin"], display: "swap" });
+const bricolageFont = Bricolage_Grotesque({ subsets: ["latin"], display: "swap" });
 
 // ─── Template canvas dimensions (must match certificate-template.png) ──────
 const CERT_W = 2000;
@@ -102,8 +107,19 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
     canvas.height = CERT_H;
     ctx.clearRect(0, 0, CERT_W, CERT_H);
 
-    const img = new Image();
-    img.onload = async () => {
+    const loadImg = (src: string) => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = src;
+      });
+    };
+
+    Promise.all([
+      loadImg("/certificate-template.png"),
+      loadImg(signatureImg.src)
+    ]).then(async ([img, sigImg]) => {
       // 1. Paint the full template
       ctx.drawImage(img, 0, 0, CERT_W, CERT_H);
 
@@ -122,8 +138,8 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
       ctx.save();
       ctx.textBaseline = "alphabetic";
       ctx.fillStyle    = C_NAVY;
-      // 600 = SemiBold — strong presence without being overly heavy
-      ctx.font         = `600 80px "Bricolage Grotesque", "Bricolage_Grotesque", serif`;
+      // Use 'bold' or '700' rather than '600' to guarantee weight renders in the downloaded canvas
+      ctx.font         = `bold 80px ${bricolageFont.style.fontFamily}, serif`;
       ctx.fillText(data.user.name, TEXT_X, NAME_Y);
       ctx.restore();
 
@@ -139,24 +155,24 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
 
       let y = DESC_Y;
 
-      // Line 1 — "has successfully completed the" — Mona Sans
+      // Line 1 — "has successfully completed the" — Inter
       ctx.fillStyle = C_BODY;
-      ctx.font      = `400 30px "Mona Sans", "Helvetica Neue", Arial, sans-serif`;
+      ctx.font      = `400 30px ${interFont.style.fontFamily}, sans-serif`;
       ctx.fillText("has successfully completed the", TEXT_X, y);
       y += DESC_LH;
 
-      // Line 2 — course title — Bricolage Grotesque Medium (no italic)
+      // Line 2 — course title — Bricolage Grotesque Medium
       ctx.fillStyle = C_NAVY;
-      ctx.font      = `500 32px "Bricolage Grotesque", "Bricolage_Grotesque", serif`;
+      ctx.font      = `500 32px ${bricolageFont.style.fontFamily}, serif`;
       y = wrapText(ctx, `\u201C${data.course.title}\u201D`, TEXT_X, y, MAX_W, TITLE_LH);
 
-      // Line 3 — "conducted by Only Students" — Mona Sans
+      // Line 3 — "conducted by Only Students" — Inter
       ctx.fillStyle = C_BODY;
-      ctx.font      = `400 30px "Mona Sans", "Helvetica Neue", Arial, sans-serif`;
+      ctx.font      = `400 30px ${interFont.style.fontFamily}, sans-serif`;
       ctx.fillText("conducted by Only Students", TEXT_X, y);
       y += DESC_LH - 2;
 
-      // Line 4 — "on [date]" — Mona Sans
+      // Line 4 — "on [date]" — Inter
       ctx.fillText(`on ${formattedDate}`, TEXT_X, y);
 
       ctx.restore();
@@ -178,20 +194,24 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
       // ── Left signature (Chief Executive Officer ONLY) ──
       const SIG_Y_BASE = 1130; // Moved further up
 
-      // Name — Bricolage Grotesque SemiBold (Static owner name)
-      ctx.fillStyle    = C_NAVY;
-      ctx.font         = `600 28px "Bricolage Grotesque", "Bricolage_Grotesque", serif`;
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText("Madhan Kumar", TEXT_X, SIG_Y_BASE);
+      // Draw signature image
+      const maxSigW = 560;
+      const maxSigH = 280;
+      const scale = Math.min(maxSigW / sigImg.width, maxSigH / sigImg.height);
+      const drawW = sigImg.width * scale;
+      const drawH = sigImg.height * scale;
+      
+      const sigX = TEXT_X + 155 - (drawW / 2);
+      // Bring the signature down a bit more, now without the line
+      const sigY = SIG_Y_BASE + 100 - drawH;
+      ctx.drawImage(sigImg, sigX, sigY, drawW, drawH);
 
-      // Line under name
-      ctx.fillStyle = C_NAVY;
-      ctx.fillRect(TEXT_X, SIG_Y_BASE + 25, 310, 1.5);
-
-      // Title — Mona Sans
+      // Title — Inter
       ctx.fillStyle = C_BODY;
-      ctx.font      = `400 22px "Mona Sans", "Helvetica Neue", Arial, sans-serif`;
-      ctx.fillText("Chief Executive Officer", TEXT_X, SIG_Y_BASE + 55);
+      ctx.font      = `400 22px ${interFont.style.fontFamily}, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText("Chief Executive Officer", TEXT_X + 155, SIG_Y_BASE + 55);
+      ctx.textAlign = "left"; // reset for future draws
 
       // ── 7. Verification ID (Cryptographic Security) ─────────────────────
       if (data.certificateId) {
@@ -205,13 +225,9 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
       ctx.restore();
 
       setIsReady(true);
-
-    };
-
-    img.onerror = () =>
-      console.error("[Certificate] Failed to load /certificate-template.png");
-
-    img.src = "/certificate-template.png";
+    }).catch(err => {
+      console.error("[Certificate] Failed to load images", err);
+    });
   }, [data.user.name, data.course.title, formattedDate]);
 
   // ── Download as full-resolution PNG ────────────────────────────────────
