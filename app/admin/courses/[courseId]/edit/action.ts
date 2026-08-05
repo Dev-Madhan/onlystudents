@@ -11,6 +11,7 @@ import {
   LessonSchemaType,
 } from "@/lib/zodSchema";
 import { prisma } from "@/lib/db";
+import { resend, EMAIL_SENDER } from "@/lib/resend";
 import arcjet, {fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
@@ -76,11 +77,21 @@ export async function reorderLessons(
   chapterId: string,
   lessons: { id: string; position: number }[]
 ): Promise<ApiResponse> {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   try {
     if (!lessons.length) {
       return { status: "error", message: "No lessons provided" };
+    }
+
+    // Ownership guard — verify the chapter belongs to a course owned by this admin
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: { course: { select: { userId: true } } },
+    });
+
+    if (!chapter || chapter.course.userId !== user.user.id) {
+      return { status: "error", message: "Access denied: you do not own this course" };
     }
 
     await prisma.$transaction(
@@ -113,11 +124,21 @@ export async function reorderChapters(
   courseId: string,
   chapters: { id: string; position: number }[]
 ): Promise<ApiResponse> {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   try {
     if (!chapters.length) {
       return { status: "error", message: "No chapters provided" };
+    }
+
+    // Ownership guard
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      select: { userId: true },
+    });
+
+    if (!course || course.userId !== user.user.id) {
+      return { status: "error", message: "Access denied: you do not own this course" };
     }
 
     await prisma.$transaction(
@@ -143,12 +164,22 @@ export async function reorderChapters(
 export async function createChapter(
   values: ChapterSchemaType
 ): Promise<ApiResponse> {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   try {
     const result = chapterSchema.safeParse(values);
     if (!result.success) {
       return { status: "error", message: "Invalid data" };
+    }
+
+    // Ownership guard
+    const course = await prisma.course.findUnique({
+      where: { id: result.data.courseId },
+      select: { userId: true },
+    });
+
+    if (!course || course.userId !== user.user.id) {
+      return { status: "error", message: "Access denied: you do not own this course" };
     }
 
     const maxPos = await prisma.chapter.findFirst({
@@ -179,12 +210,22 @@ export async function createChapter(
 export async function createLesson(
   values: LessonSchemaType
 ): Promise<ApiResponse> {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   try {
     const result = lessonSchema.safeParse(values);
     if (!result.success) {
       return { status: "error", message: "Invalid data" };
+    }
+
+    // Ownership guard — verify via the chapter's parent course
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: result.data.chapterId },
+      select: { course: { select: { userId: true } } },
+    });
+
+    if (!chapter || chapter.course.userId !== user.user.id) {
+      return { status: "error", message: "Access denied: you do not own this course" };
     }
 
     const maxPos = await prisma.lesson.findFirst({
@@ -193,7 +234,7 @@ export async function createLesson(
       select: { position: true },
     });
 
-    await prisma.lesson.create({
+    const newLesson = await prisma.lesson.create({
       data: {
         title: result.data.name,
         description: result.data.description,
@@ -203,6 +244,51 @@ export async function createLesson(
         position: (maxPos?.position ?? 0) + 1,
       },
     });
+
+    // Send realtime email notifications to enrolled users who opted in
+    const courseWithEnrollments = await prisma.course.findUnique({
+      where: { id: result.data.courseId },
+      include: {
+        enrollment: {
+          where: { status: "Active" },
+          include: {
+            user: {
+              select: { email: true, notifyCourseUpdates: true, name: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (courseWithEnrollments) {
+      const usersToNotify = courseWithEnrollments.enrollment
+        .map((e) => e.user)
+        .filter((u) => u.notifyCourseUpdates && u.email);
+
+      if (usersToNotify.length > 0) {
+        // We use Promise.allSettled to send emails without crashing if one fails,
+        // and we don't strictly await it if we want it to be fully async, but in Server Actions
+        // awaiting is safer to ensure it completes before the function returns.
+        await Promise.allSettled(
+          usersToNotify.map((u) =>
+            resend.emails.send({
+              from: EMAIL_SENDER,
+              to: [u.email],
+              subject: `New Lesson Added: ${newLesson.title}`,
+              html: `
+                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2>Hi ${u.name},</h2>
+                  <p>A new lesson "<strong>${newLesson.title}</strong>" has just been added to the course <strong>${courseWithEnrollments.title}</strong>!</p>
+                  <p>Check it out now and continue learning.</p>
+                  <br/>
+                  <p>Best regards,<br/>Only Students Team</p>
+                </div>
+              `,
+            })
+          )
+        );
+      }
+    }
 
     revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
 
@@ -224,7 +310,7 @@ export async function deleteLesson({
   lessonId: string;
   courseId: string;
 }): Promise<ApiResponse> {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   try {
     const course = await prisma.course.findUnique({
@@ -240,6 +326,11 @@ export async function deleteLesson({
 
     if (!course) {
       return { status: "error", message: "Course not found" };
+    }
+
+    // Ownership guard
+    if (course.userId !== user.user.id) {
+      return { status: "error", message: "Access denied: you do not own this course" };
     }
 
     const chapter = course.chapters.find(
@@ -299,7 +390,7 @@ export async function deleteChapter({
   chapterId: string;
   courseId: string;
 }): Promise<ApiResponse> {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   try {
     const course = await prisma.course.findUnique({
@@ -314,6 +405,11 @@ export async function deleteChapter({
 
     if (!course) {
       return { status: "error", message: "Course not found" };
+    }
+
+    // Ownership guard
+    if (course.userId !== user.user.id) {
+      return { status: "error", message: "Access denied: you do not own this course" };
     }
 
     const chapterExists = course.chapters.some(

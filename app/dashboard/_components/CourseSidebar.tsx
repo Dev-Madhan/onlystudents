@@ -118,7 +118,7 @@ export function CourseSidebar({ course, closeButton }: iAppProps) {
           </Button>
         )}
         {!isCourseCompleted && (
-          <p className="text-[10px] text-muted-foreground text-center mt-2 font-bricolage">
+          <p className="text-[10px] text-muted-foreground text-center mt-2 font-serif">
             Complete all lessons to unlock
           </p>
         )}

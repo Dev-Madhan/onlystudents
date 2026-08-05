@@ -27,7 +27,7 @@ import {useSignOut} from "@/hooks/user-signout";
 interface iAppProps {
     name: string;
     email: string;
-    image: string;
+    image: string | undefined | null;
 }
 
 export function UserDropdown({image, name, email}: iAppProps) {
@@ -38,7 +38,7 @@ export function UserDropdown({image, name, email}: iAppProps) {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
                     <Avatar>
-                        <AvatarImage src={image} alt="Profile image" />
+                        <AvatarImage src={image ?? undefined} alt="Profile image" />
                         <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <ChevronDownIcon

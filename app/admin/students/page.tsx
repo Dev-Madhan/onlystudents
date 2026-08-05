@@ -32,7 +32,7 @@ async function StudentsTable() {
       {/* Mobile Card Layout — visible below md */}
       <div className="flex flex-col gap-3 md:hidden">
         {users.length === 0 ? (
-          <div className="text-center p-6 border rounded-xl bg-muted/10 text-muted-foreground text-sm">
+          <div className="text-center p-6 border rounded-xl bg-muted/10 text-muted-foreground text-sm font-sans">
             No users found.
           </div>
         ) : (
@@ -41,39 +41,42 @@ async function StudentsTable() {
               <div className="flex items-start gap-3">
                 <Avatar className="h-10 w-10 border shadow-sm shrink-0">
                   <AvatarImage src={user.image || ""} alt={user.name} />
-                  <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                  <AvatarFallback className="bg-primary/10 text-primary font-medium font-sans">
                     {user.name?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-sm text-foreground tracking-tight truncate font-bricolage">
+                    {/* Name — display text → serif */}
+                    <span className="font-semibold text-sm text-foreground tracking-tight truncate font-serif">
                       {user.name}
                     </span>
                     <Badge
                       variant="outline"
                       className={user.role === "admin"
-                        ? "bg-primary text-primary-foreground border-primary px-2 py-0.5 text-[10px] capitalize font-medium tracking-wide shadow-sm shrink-0"
-                        : "bg-primary/10 text-primary border-primary/30 px-2 py-0.5 text-[10px] capitalize font-medium tracking-wide shrink-0"}
+                        ? "bg-primary text-primary-foreground border-primary px-2 py-0.5 text-[10px] capitalize font-medium tracking-wide shadow-sm shrink-0 font-sans"
+                        : "bg-primary/10 text-primary border-primary/30 px-2 py-0.5 text-[10px] capitalize font-medium tracking-wide shrink-0 font-sans"}
                     >
                       {user.role || "student"}
                     </Badge>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5 truncate font-bricolage">
+                  {/* Email — meta info → sans */}
+                  <span className="text-[11px] text-muted-foreground mt-0.5 truncate font-sans">
                     {user.email}
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                <span className="text-[11px] text-muted-foreground font-medium">
+                {/* Joined date — meta info → sans */}
+                <span className="text-[11px] text-muted-foreground font-medium font-sans">
                   Joined {new Intl.DateTimeFormat("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   }).format(user.createdAt)}
                 </span>
-                <span className="text-[11px] font-medium text-muted-foreground">
+                <span className="text-[11px] font-medium text-muted-foreground font-sans">
                   Enrollments: <span className="font-semibold text-primary">{user._count.enrollment}</span>
                 </span>
               </div>
@@ -87,16 +90,17 @@ async function StudentsTable() {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead className="w-[300px]">User</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Joined Date</TableHead>
-              <TableHead className="text-center">Enrollments</TableHead>
+              {/* Table headings — label text → sans */}
+              <TableHead className="w-[300px] font-sans font-semibold">User</TableHead>
+              <TableHead className="font-sans font-semibold">Role</TableHead>
+              <TableHead className="font-sans font-semibold">Joined Date</TableHead>
+              <TableHead className="text-center font-sans font-semibold">Enrollments</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground font-sans">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -106,33 +110,37 @@ async function StudentsTable() {
                   <TableCell className="flex items-center gap-3 py-4">
                     <Avatar className="h-10 w-10 border shadow-sm">
                       <AvatarImage src={user.image || ""} alt={user.name} />
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                      <AvatarFallback className="bg-primary/10 text-primary font-medium font-sans">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="font-semibold text-sm text-foreground tracking-tight font-bricolage">{user.name}</span>
-                      <span className="text-xs text-muted-foreground mt-0.5 font-bricolage">{user.email}</span>
+                      {/* Name — display text → serif */}
+                      <span className="font-semibold text-sm text-foreground tracking-tight font-serif">{user.name}</span>
+                      {/* Email — meta info → sans */}
+                      <span className="text-xs text-muted-foreground mt-0.5 font-sans">{user.email}</span>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={user.role === "admin"
-                        ? "bg-primary text-primary-foreground border-primary px-3 py-1 text-xs capitalize font-medium tracking-wide shadow-sm"
-                        : "bg-primary/10 text-primary border-primary/30 px-3 py-1 text-xs capitalize font-medium tracking-wide"}
+                        ? "bg-primary text-primary-foreground border-primary px-3 py-1 text-xs capitalize font-medium tracking-wide shadow-sm font-sans"
+                        : "bg-primary/10 text-primary border-primary/30 px-3 py-1 text-xs capitalize font-medium tracking-wide font-sans"}
                     >
                       {user.role || "student"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground font-medium">
+                  {/* Date — meta info → sans */}
+                  <TableCell className="text-sm text-muted-foreground font-medium font-sans">
                     {new Intl.DateTimeFormat("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     }).format(user.createdAt)}
                   </TableCell>
-                  <TableCell className="text-center font-semibold tabular-nums text-sm">
+                  {/* Enrollment count — numeric data → sans tabular */}
+                  <TableCell className="text-center font-semibold tabular-nums text-sm font-sans">
                     {user._count.enrollment}
                   </TableCell>
                 </TableRow>
@@ -201,16 +209,20 @@ export default function StudentsPage() {
   return (
     <>
       <div className="mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight font-bricolage">Students</h2>
-        <p className="text-muted-foreground text-sm mt-1 font-bricolage">
+        {/* Page title — display heading → serif */}
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight font-serif">Students</h2>
+        {/* Subtitle — body copy → sans */}
+        <p className="text-muted-foreground text-sm mt-1 font-sans">
           Manage your users and view their course enrollments.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-bricolage">Registered Users</CardTitle>
-          <CardDescription className="font-bricolage">
+          {/* Card title — display → serif */}
+          <CardTitle className="font-serif">Registered Users</CardTitle>
+          {/* Card description — body copy → sans */}
+          <CardDescription className="font-sans">
             All users currently registered on the platform.
           </CardDescription>
         </CardHeader>

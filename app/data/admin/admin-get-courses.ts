@@ -21,6 +21,7 @@ export async function adminGetCourses() {
             price: true,
             fileKey: true,
             slug: true,
+            userId: true,
         },
     });
 

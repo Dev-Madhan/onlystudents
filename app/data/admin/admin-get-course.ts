@@ -14,6 +14,7 @@ export async function adminGetCourse(courseId: string) {
     where: { id: courseId },
     select: {
       id: true,
+      userId: true,
       title: true,
       description: true,
       smallDescription: true,

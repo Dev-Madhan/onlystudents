@@ -3,12 +3,21 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {EditCourseForm} from "@/app/admin/courses/[courseId]/edit/_components/EditCourseForm";
 import {CourseStructure} from "@/app/admin/courses/[courseId]/edit/_components/CourseStructure";
+import {requireAdmin} from "@/app/data/admin/require-admin";
+import {redirect} from "next/navigation";
 
 type Params = Promise<{ courseId: string }>;
 
 export default async function EditRouter({params}: { params: Params }) {
     const {courseId} = await params;
+    const session = await requireAdmin();
     const data = await adminGetCourse(courseId);
+
+    // Server-side ownership guard — redirect before exposing any course data
+    if (data.userId !== session.user.id) {
+        redirect("/admin/courses");
+    }
+
     return (
         <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 md:mb-8 leading-tight break-words">

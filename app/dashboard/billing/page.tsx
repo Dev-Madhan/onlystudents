@@ -21,8 +21,8 @@ export default async function BillingPage() {
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 mb-6">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight font-bricolage">Billing & Receipts</h2>
-          <p className="text-muted-foreground mt-1 text-sm md:text-base font-bricolage">View your purchase history and active course subscriptions.</p>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight font-serif">Billing & Receipts</h2>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base font-serif">View your purchase history and active course subscriptions.</p>
         </div>
       </div>
 
@@ -30,9 +30,9 @@ export default async function BillingPage() {
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
             <Receipt className="h-5 w-5 text-primary" />
-            <CardTitle className="font-bricolage">Transaction History</CardTitle>
+            <CardTitle className="font-serif">Transaction History</CardTitle>
           </div>
-          <CardDescription className="font-bricolage">A detailed list of all your past purchases.</CardDescription>
+          <CardDescription className="font-serif">A detailed list of all your past purchases.</CardDescription>
         </CardHeader>
         <CardContent className="px-4 sm:px-6">
           {/* Mobile View */}
@@ -45,7 +45,7 @@ export default async function BillingPage() {
               enrollments.map((enrollment) => (
                 <div key={enrollment.id} className="border rounded-xl p-4 space-y-3 bg-card shadow-sm">
                   <div className="flex justify-between items-start gap-4">
-                    <div className="font-semibold line-clamp-2 text-sm font-bricolage">{enrollment.course.title}</div>
+                    <div className="font-semibold line-clamp-2 text-sm font-serif">{enrollment.course.title}</div>
                     <Badge 
                       variant="outline"
                       className={enrollment.status === "Active" 
@@ -63,7 +63,7 @@ export default async function BillingPage() {
                         year: "numeric",
                       }).format(enrollment.createdAt)}
                     </div>
-                    <div className="font-semibold tabular-nums text-primary font-bricolage">
+                    <div className="font-semibold tabular-nums text-primary font-serif">
                       <AnimatedMetric value={enrollment.amount} prefix="₹" format={{ minimumFractionDigits: 2 }} />
                     </div>
                   </div>
@@ -93,7 +93,7 @@ export default async function BillingPage() {
                 ) : (
                   enrollments.map((enrollment) => (
                     <TableRow key={enrollment.id} className="hover:bg-muted/30 transition-colors">
-                      <TableCell className="font-semibold text-foreground tracking-tight py-4 font-bricolage">
+                      <TableCell className="font-semibold text-foreground tracking-tight py-4 font-serif">
                         <span className="line-clamp-1">{enrollment.course.title}</span>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground font-medium whitespace-nowrap">
@@ -113,7 +113,7 @@ export default async function BillingPage() {
                           {enrollment.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right font-semibold tabular-nums text-primary text-base whitespace-nowrap font-bricolage">
+                      <TableCell className="text-right font-semibold tabular-nums text-primary text-base whitespace-nowrap font-serif">
                         <AnimatedMetric value={enrollment.amount} prefix="₹" format={{ minimumFractionDigits: 2 }} />
                       </TableCell>
                     </TableRow>

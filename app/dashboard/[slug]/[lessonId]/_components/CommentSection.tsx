@@ -60,7 +60,7 @@ export function CommentSection({ lessonId, courseSlug, comments = [], currentUse
                         placeholder="What are your thoughts on this lesson?"
                         value={newCommentText}
                         onChange={(e) => setNewCommentText(e.target.value)}
-                        className="min-h-[100px] resize-y bg-background font-bricolage border-2"
+                        className="min-h-[100px] resize-y bg-background font-serif border-2"
                         disabled={pending}
                     />
                     <div className="flex justify-end">
@@ -175,7 +175,7 @@ function CommentItem({
                         ) : (
                             <span className="text-[10px] uppercase font-medium text-muted-foreground tracking-wider">Student</span>
                         )}
-                        <span className="text-xs text-muted-foreground font-bricolage">
+                        <span className="text-xs text-muted-foreground font-serif">
                             {formatRelativeTime(comment.createdAt)}
                             {isEdited && " (edited)"}
                         </span>
@@ -186,7 +186,7 @@ function CommentItem({
                             <Textarea
                                 value={editText}
                                 onChange={(e) => setEditText(e.target.value)}
-                                className="min-h-[80px] resize-y text-sm font-bricolage border-2"
+                                className="min-h-[80px] resize-y text-sm font-serif border-2"
                                 disabled={pending}
                             />
                             <div className="flex justify-end gap-2">
@@ -272,7 +272,7 @@ function CommentItem({
                         placeholder="Write a reply..."
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
-                        className="min-h-[80px] resize-y text-sm bg-muted/30 font-bricolage border-2"
+                        className="min-h-[80px] resize-y text-sm bg-muted/30 font-serif border-2"
                         disabled={pending}
                     />
                     <div className="flex justify-end gap-2">
@@ -371,7 +371,7 @@ function ReplyItem({
                     ) : (
                         <span className="text-[10px] uppercase font-medium text-muted-foreground tracking-wider">Student</span>
                     )}
-                    <span className="text-xs text-muted-foreground font-bricolage">
+                    <span className="text-xs text-muted-foreground font-serif">
                         {formatRelativeTime(reply.createdAt)}
                         {isEdited && " (edited)"}
                     </span>
@@ -382,7 +382,7 @@ function ReplyItem({
                         <Textarea
                             value={editText}
                             onChange={(e) => setEditText(e.target.value)}
-                            className="min-h-[60px] resize-y text-sm font-bricolage border-2"
+                            className="min-h-[60px] resize-y text-sm font-serif border-2"
                             disabled={pending}
                         />
                         <div className="flex justify-end gap-2">

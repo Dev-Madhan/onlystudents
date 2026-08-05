@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { GithubIcon, Loader, Loader2, Send } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Google } from "@/components/ui/svgs/google";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useState, useTransition } from "react";
@@ -18,9 +19,27 @@ import { useRouter } from "next/navigation";
 
 export function LoginForm() {
     const router = useRouter();
+    const [googlePending, startGoogleTransition] = useTransition();
     const [githubPending, startGithubTransition] = useTransition();
     const [emailPending, startEmailTransition] = useTransition();
     const [email, setEmail] = useState("");
+
+    async function signInWithGoogle() {
+        startGoogleTransition(async () => {
+            await authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/",
+                fetchOptions: {
+                    onSuccess: () => {
+                        toast.success("Signed in with Google, you will be redirected...");
+                    },
+                    onError: () => {
+                        toast.error("Internal Server Error");
+                    },
+                },
+            });
+        });
+    }
 
     async function signInWithGithub() {
         startGithubTransition(async () => {
@@ -65,11 +84,30 @@ export function LoginForm() {
                         Welcome Back!
                     </CardTitle>
                     <CardDescription className="font-mono text-muted-foreground">
-                        Login with your Github or Email account
+                        Login with your Google, Github or Email account
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent className="flex flex-col gap-5">
+                    <Button
+                        disabled={googlePending}
+                        onClick={signInWithGoogle}
+                        className="w-full font-mono"
+                        variant="outline"
+                    >
+                        {googlePending ? (
+                            <>
+                                <Loader className="size-4 animate-spin" />
+                                <span className="ml-2">Loading...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Google className="size-4" />
+                                <span className="ml-2">Sign in with Google</span>
+                            </>
+                        )}
+                    </Button>
+
                     <Button
                         disabled={githubPending}
                         onClick={signInWithGithub}

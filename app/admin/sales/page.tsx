@@ -58,20 +58,20 @@ async function SalesContent() {
       <div className="grid grid-cols-2 gap-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3 md:px-6 md:pt-6 md:pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium leading-tight font-bricolage">
+            <CardTitle className="text-xs md:text-sm font-medium leading-tight font-serif">
               Total Revenue
             </CardTitle>
             <IndianRupee className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground shrink-0" />
           </CardHeader>
           <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
-            <div className="text-lg md:text-2xl font-bold leading-none mb-1 font-bricolage">
+            <div className="text-lg md:text-2xl font-bold leading-none mb-1 font-serif">
               <AnimatedMetric
                 value={totalRevenue}
                 prefix="₹"
                 format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
               />
             </div>
-            <p className="text-[10px] md:text-xs text-muted-foreground font-bricolage">
+            <p className="text-[10px] md:text-xs text-muted-foreground font-serif">
               Lifetime earnings
             </p>
           </CardContent>
@@ -79,16 +79,16 @@ async function SalesContent() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 pt-3 px-3 md:px-6 md:pt-6 md:pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium leading-tight font-bricolage">
+            <CardTitle className="text-xs md:text-sm font-medium leading-tight font-serif">
               Sales Count
             </CardTitle>
             <CreditCard className="h-3.5 w-3.5 md:h-4 md:w-4 text-muted-foreground shrink-0" />
           </CardHeader>
           <CardContent className="px-3 pb-3 md:px-6 md:pb-6">
-            <div className="text-lg md:text-2xl font-bold leading-none mb-1 font-bricolage">
+            <div className="text-lg md:text-2xl font-bold leading-none mb-1 font-serif">
               <AnimatedMetric value={totalSales} prefix="+" />
             </div>
-            <p className="text-[10px] md:text-xs text-muted-foreground font-bricolage">
+            <p className="text-[10px] md:text-xs text-muted-foreground font-serif">
               Total enrollments
             </p>
           </CardContent>
@@ -102,9 +102,9 @@ async function SalesContent() {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-primary" />
-              <CardTitle className="text-base md:text-lg font-bricolage">Overview</CardTitle>
+              <CardTitle className="text-base md:text-lg font-serif">Overview</CardTitle>
             </div>
-            <CardDescription className="text-xs md:text-sm font-bricolage">
+            <CardDescription className="text-xs md:text-sm font-serif">
               Your revenue tracking over the past months.
             </CardDescription>
           </CardHeader>
@@ -116,10 +116,10 @@ async function SalesContent() {
         {/* Recent Transactions — full width on mobile, 40% on desktop */}
         <Card className="w-full lg:flex-[3]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base md:text-lg font-bricolage">
+            <CardTitle className="text-base md:text-lg font-serif">
               Recent Transactions
             </CardTitle>
-            <CardDescription className="text-xs md:text-sm font-bricolage">
+            <CardDescription className="text-xs md:text-sm font-serif">
               The 5 most recent purchases.
             </CardDescription>
           </CardHeader>
@@ -136,7 +136,7 @@ async function SalesContent() {
                     className="flex items-center justify-between py-3 gap-3"
                   >
                     <div className="flex flex-col min-w-0">
-                      <p className="text-sm font-medium leading-tight truncate font-bricolage">
+                      <p className="text-sm font-medium leading-tight truncate font-serif">
                         {enrollment.user.name}
                       </p>
                       <p className="text-xs text-muted-foreground truncate mt-0.5">
@@ -157,10 +157,10 @@ async function SalesContent() {
       {/* All Transactions */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base md:text-lg font-bricolage">
+          <CardTitle className="text-base md:text-lg font-serif">
             All Transactions
           </CardTitle>
-          <CardDescription className="text-xs md:text-sm font-bricolage">
+          <CardDescription className="text-xs md:text-sm font-serif">
             A detailed history of all course enrollments.
           </CardDescription>
         </CardHeader>
@@ -180,10 +180,10 @@ async function SalesContent() {
                   {/* Row 1: Name + Badge */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm leading-tight truncate font-bricolage">
+                      <p className="font-semibold text-sm leading-tight truncate font-serif">
                         {enrollment.user.name}
                       </p>
-                      <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-bricolage">
+                      <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-serif">
                         {enrollment.user.email}
                       </p>
                     </div>
@@ -252,10 +252,10 @@ async function SalesContent() {
                     >
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-semibold text-foreground tracking-tight text-sm font-bricolage">
+                          <span className="font-semibold text-foreground tracking-tight text-sm font-serif">
                             {enrollment.user.name}
                           </span>
-                          <span className="text-xs text-muted-foreground mt-0.5 truncate max-w-[200px] font-bricolage">
+                          <span className="text-xs text-muted-foreground mt-0.5 truncate max-w-[200px] font-serif">
                             {enrollment.user.email}
                           </span>
                         </div>
@@ -355,10 +355,10 @@ export default function SalesPage() {
   return (
     <>
       <div className="mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight font-bricolage">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight font-serif">
           Sales &amp; Analytics
         </h2>
-        <p className="text-muted-foreground text-sm mt-1 font-bricolage">
+        <p className="text-muted-foreground text-sm mt-1 font-serif">
           Track your revenue, enrollments, and transaction history.
         </p>
       </div>

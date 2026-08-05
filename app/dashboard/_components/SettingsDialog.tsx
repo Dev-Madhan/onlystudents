@@ -163,8 +163,8 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                 {/* Header */}
                 <div className="px-4 pt-5 pb-3 sm:px-6 sm:pt-6 sm:pb-4">
                     <DialogHeader>
-                        <DialogTitle className="text-xl sm:text-2xl font-bricolage">Settings</DialogTitle>
-                        <DialogDescription className="text-sm font-bricolage">
+                        <DialogTitle className="text-xl sm:text-2xl font-serif">Settings</DialogTitle>
+                        <DialogDescription className="text-sm font-serif">
                             Manage your dashboard preferences and account settings here.
                         </DialogDescription>
                     </DialogHeader>
@@ -212,7 +212,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                                     <div className="space-y-5">
                                         <div className="flex items-center justify-between gap-4">
                                             <div className="flex flex-col space-y-1 min-w-0">
-                                                <span className="font-semibold text-sm sm:text-base font-bricolage">Theme Preference</span>
+                                                <span className="font-semibold text-sm sm:text-base font-serif">Theme Preference</span>
                                                 <span className="text-xs sm:text-sm text-muted-foreground">Customize the theme of the application.</span>
                                             </div>
                                             <ThemeToggle />
@@ -224,7 +224,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                                 {activeTab === "account" && (
                                     <div className="space-y-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="settings-name" className="text-sm font-bricolage">Display Name</Label>
+                                            <Label htmlFor="settings-name" className="text-sm font-serif">Display Name</Label>
                                             <div className="flex flex-col sm:flex-row gap-2">
                                                 <Input
                                                     id="settings-name"
@@ -244,13 +244,13 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                                             </div>
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="settings-email" className="text-sm font-bricolage">Email Address</Label>
+                                            <Label htmlFor="settings-email" className="text-sm font-serif">Email Address</Label>
                                             <Input
                                                 id="settings-email"
                                                 defaultValue={user?.email || ""}
                                                 key={user?.email || "email"}
                                                 readOnly
-                                                className="bg-muted w-full font-bricolage"
+                                                className="bg-muted w-full font-serif"
                                             />
                                         </div>
                                         <Separator />
@@ -281,7 +281,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                                     <div className="space-y-4">
                                         <div className="flex items-start sm:items-center justify-between gap-3 border rounded-xl p-4">
                                             <div className="flex flex-col space-y-1 min-w-0 flex-1">
-                                                <span className="font-semibold text-sm flex items-center gap-2 font-bricolage">
+                                                <span className="font-semibold text-sm flex items-center gap-2 font-serif">
                                                     <Mail className="size-4 shrink-0" />
                                                     Course Updates
                                                 </span>
@@ -299,7 +299,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                                         </div>
                                         <div className="flex items-start sm:items-center justify-between gap-3 border rounded-xl p-4">
                                             <div className="flex flex-col space-y-1 min-w-0 flex-1">
-                                                <span className="font-semibold text-sm flex items-center gap-2 font-bricolage">
+                                                <span className="font-semibold text-sm flex items-center gap-2 font-serif">
                                                     <User className="size-4 shrink-0" />
                                                     Account Activity
                                                 </span>

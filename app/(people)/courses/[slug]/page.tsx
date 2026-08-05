@@ -131,7 +131,7 @@ export default async function SlugPage({ params }: { params: Params }) {
 
         <div className="mt-8 space-y-6">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight font-bricolage">
+            <h1 className="text-4xl font-bold tracking-tight font-serif">
               {course.title}
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed line-clamp-2 font-serif">
@@ -159,7 +159,7 @@ export default async function SlugPage({ params }: { params: Params }) {
           <Separator className="my-8" />
 
           <div className="space-y-6">
-            <h2 className="text-3xl font-semibold tracking-tight font-bricolage">
+            <h2 className="text-3xl font-semibold tracking-tight font-serif">
               Course Description
             </h2>
 
@@ -168,7 +168,7 @@ export default async function SlugPage({ params }: { params: Params }) {
         </div>
         <div className="mt-12 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-semibold tracking-tight font-bricolage">
+            <h2 className="text-3xl font-semibold tracking-tight font-serif">
               Course Content
             </h2>
 
@@ -195,7 +195,7 @@ export default async function SlugPage({ params }: { params: Params }) {
                               {index + 1}
                             </p>
                             <div className="flex-1 min-w-0">
-                              <h3 className="text-base sm:text-xl font-semibold text-left font-bricolage line-clamp-2 leading-tight">
+                              <h3 className="text-base sm:text-xl font-semibold text-left font-serif line-clamp-2 leading-tight">
                                 {chapter.title}
                               </h3>
                               <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-1.5 text-left font-medium font-mono truncate">
@@ -257,8 +257,8 @@ export default async function SlugPage({ params }: { params: Params }) {
           <Card className="py-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <span className="text-lg font-medium font-bricolage">Price:</span>
-                <span className="text-2xl font-bold text-primary font-bricolage">
+                <span className="text-lg font-medium font-serif">Price:</span>
+                <span className="text-2xl font-bold text-primary font-serif">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "INR",
@@ -267,7 +267,7 @@ export default async function SlugPage({ params }: { params: Params }) {
               </div>
 
               <div className="mb-6 space-y-3 rounded-lg bg-muted p-4">
-                <h4 className="font-medium font-bricolage">What you will get:</h4>
+                <h4 className="font-medium font-serif">What you will get:</h4>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 border-2 border-primary/20">
@@ -328,7 +328,7 @@ export default async function SlugPage({ params }: { params: Params }) {
               </div>
 
               <div className="mb-6 space-y-3">
-                <h4 className="font-medium font-bricolage">This course includes:</h4>
+                <h4 className="font-medium font-serif">This course includes:</h4>
                 <ul className="space-y-2">
                   <li className="flex items-center gap-2 text-sm">
                     <div className="rounded-full bg-green-500/10 text-green-500 p-1">

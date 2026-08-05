@@ -26,7 +26,7 @@ export default async function DashboardPage() {
       {enrolledCourses.length > 0 && (
         <>
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-bold font-bricolage">Enrolled Courses</h1>
+            <h1 className="text-3xl font-bold font-serif">Enrolled Courses</h1>
             <p className="text-muted-foreground">
               Here you can see all the courses you have access to
             </p>
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
 
       <section className="mt-10">
         <div className="flex flex-col gap-2 mb-4">
-          <h2 className="text-3xl font-bold font-bricolage">Available Courses</h2>
+          <h2 className="text-3xl font-bold font-serif">Available Courses</h2>
           <p className="text-muted-foreground">
             Here you can see all the courses you can purchase
           </p>
