@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import signatureImg from "@/app/src/assets/signature/Signature.png";
+import signatureImg from "@/app/src/assets/signature/signature.png";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 
 const interFont = Inter({ subsets: ["latin"], display: "swap" });
@@ -49,14 +49,14 @@ const CERT_H = 1414;
 //    Own underline             → y=783
 //    Description block         → y starts at 826
 // ──────────────────────────────────────────────────────────────────────────
-const TEXT_X      = 190;   // left margin — lines up with template text
-const NAME_Y      = 680;   // name baseline — moved up another 40 px
+const TEXT_X = 190;   // left margin — lines up with template text
+const NAME_Y = 680;   // name baseline — moved up another 40 px
 const UNDERLINE_Y = 710;   // underline drawn right below name
 const UNDERLINE_W = 760;   // width in px  (≈ 38% of canvas width)
-const DESC_Y      = 758;   // first description line baseline
-const DESC_LH     = 48;    // normal line-height for description
-const TITLE_LH    = 54;    // line-height for Bricolage course title (may wrap)
-const MAX_W       = 1380;  // max text width before word-wrapping
+const DESC_Y = 758;   // first description line baseline
+const DESC_LH = 48;    // normal line-height for description
+const TITLE_LH = 54;    // line-height for Bricolage course title (may wrap)
+const MAX_W = 1380;  // max text width before word-wrapping
 
 const C_NAVY = "#0d1b2a";  // matches CERTIFICATE heading dark navy
 const C_BODY = "#2a3547";  // matches body text in template
@@ -103,7 +103,7 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width  = CERT_W;
+    canvas.width = CERT_W;
     canvas.height = CERT_H;
     ctx.clearRect(0, 0, CERT_W, CERT_H);
 
@@ -137,9 +137,9 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
       // ── 3. Recipient Name — Bricolage Grotesque SemiBold ───────────────
       ctx.save();
       ctx.textBaseline = "alphabetic";
-      ctx.fillStyle    = C_NAVY;
+      ctx.fillStyle = C_NAVY;
       // Use 'bold' or '700' rather than '600' to guarantee weight renders in the downloaded canvas
-      ctx.font         = `bold 80px ${bricolageFont.style.fontFamily}, serif`;
+      ctx.font = `bold 80px ${bricolageFont.style.fontFamily}, serif`;
       ctx.fillText(data.user.name, TEXT_X, NAME_Y);
       ctx.restore();
 
@@ -157,18 +157,18 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
 
       // Line 1 — "has successfully completed the" — Inter
       ctx.fillStyle = C_BODY;
-      ctx.font      = `400 30px ${interFont.style.fontFamily}, sans-serif`;
+      ctx.font = `400 30px ${interFont.style.fontFamily}, sans-serif`;
       ctx.fillText("has successfully completed the", TEXT_X, y);
       y += DESC_LH;
 
       // Line 2 — course title — Bricolage Grotesque Medium
       ctx.fillStyle = C_NAVY;
-      ctx.font      = `500 32px ${bricolageFont.style.fontFamily}, serif`;
+      ctx.font = `500 32px ${bricolageFont.style.fontFamily}, serif`;
       y = wrapText(ctx, `\u201C${data.course.title}\u201D`, TEXT_X, y, MAX_W, TITLE_LH);
 
       // Line 3 — "conducted by Only Students" — Inter
       ctx.fillStyle = C_BODY;
-      ctx.font      = `400 30px ${interFont.style.fontFamily}, sans-serif`;
+      ctx.font = `400 30px ${interFont.style.fontFamily}, sans-serif`;
       ctx.fillText("conducted by Only Students", TEXT_X, y);
       y += DESC_LH - 2;
 
@@ -200,7 +200,7 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
       const scale = Math.min(maxSigW / sigImg.width, maxSigH / sigImg.height);
       const drawW = sigImg.width * scale;
       const drawH = sigImg.height * scale;
-      
+
       const sigX = TEXT_X + 155 - (drawW / 2);
       // Bring the signature down a bit more, now without the line
       const sigY = SIG_Y_BASE + 100 - drawH;
@@ -208,7 +208,7 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
 
       // Title — Inter
       ctx.fillStyle = C_BODY;
-      ctx.font      = `400 22px ${interFont.style.fontFamily}, sans-serif`;
+      ctx.font = `400 22px ${interFont.style.fontFamily}, sans-serif`;
       ctx.textAlign = "center";
       ctx.fillText("Chief Executive Officer", TEXT_X + 155, SIG_Y_BASE + 55);
       ctx.textAlign = "left"; // reset for future draws
@@ -237,7 +237,7 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
 
     const a = document.createElement("a");
     a.download = `OnlyStudents-Certificate-${data.course.slug}.png`;
-    a.href     = canvas.toDataURL("image/png", 1.0);
+    a.href = canvas.toDataURL("image/png", 1.0);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -280,22 +280,22 @@ export function CertificatePage({ data }: { data: CertificateDataType }) {
 
         {/* Hero greeting (hidden on print) */}
         <div className="no-print text-center space-y-4">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="relative inline-flex items-center justify-center group mb-2 mt-2"
           >
             {/* Elegant blurred glow */}
-            <motion.div 
-              animate={{ 
+            <motion.div
+              animate={{
                 scale: [1, 1.1, 1],
-                opacity: [0.5, 0.8, 0.5] 
+                opacity: [0.5, 0.8, 0.5]
               }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 rounded-full bg-primary/20 blur-xl" 
+              className="absolute inset-0 rounded-full bg-primary/20 blur-xl"
             />
-            
+
             {/* Core badge */}
             <div className="relative size-20 rounded-full bg-gradient-to-tr from-primary/20 to-primary/5 border-2 border-primary/40 flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
               <Award className="size-10 text-primary drop-shadow-md" strokeWidth={1.5} />
