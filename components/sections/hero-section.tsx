@@ -95,7 +95,7 @@ export default function HeroSection() {
                                         <span className="text-nowrap">Explore Courses</span>
                                     </Link>
 
-                                    <Link href="/login" className={buttonVariants({ variant: 'ghost', className: 'w-full sm:w-auto' })}>
+                                    <Link href="/login" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-auto border-2' })}>
                                         <span className="text-nowrap">Sign in</span>
                                     </Link>
                                 </motion.div>
