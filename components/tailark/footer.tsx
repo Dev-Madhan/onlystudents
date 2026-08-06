@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 const links = [
     { title: "Home", href: "/" },
@@ -7,6 +10,8 @@ const links = [
 ];
 
 export default function FooterSection() {
+    const { data: session } = authClient.useSession();
+
     return (
         <footer className="w-full bg-white py-12 dark:bg-transparent">
             <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
@@ -20,15 +25,18 @@ export default function FooterSection() {
                     {/* Links */}
                     <nav aria-label="Footer navigation">
                     <div className="flex flex-wrap justify-center gap-5 text-sm md:justify-end md:gap-6">
-                        {links.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.href}
-                                className="text-muted-foreground transition font-mono font-medium hover:text-primary"
-                            >
-                                {link.title}
-                            </Link>
-                        ))}
+                        {links.map((link, index) => {
+                            if (link.href === "/admin" && session?.user?.role !== "admin") return null;
+                            return (
+                                <Link
+                                    key={index}
+                                    href={link.href}
+                                    className="text-muted-foreground transition font-mono font-medium hover:text-primary"
+                                >
+                                    {link.title}
+                                </Link>
+                            );
+                        })}
                     </div>
                     </nav>
 

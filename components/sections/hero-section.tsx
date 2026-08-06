@@ -6,6 +6,7 @@ import { buttonVariants } from '@/components/ui/button'
 import Image from 'next/image'
 import heroImage from '@/app/src/assets/images/hero-image.png'
 import { motion, Variants } from 'framer-motion'
+import { authClient } from '@/lib/auth-client'
 
 const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -47,6 +48,8 @@ const imageVariants: Variants = {
 }
 
 export default function HeroSection() {
+    const { data: session, isPending } = authClient.useSession();
+
     return (
         <main className="overflow-hidden">
                 <section>
@@ -95,9 +98,11 @@ export default function HeroSection() {
                                         <span className="text-nowrap">Explore Courses</span>
                                     </Link>
 
-                                    <Link href="/login" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-auto border-2' })}>
-                                        <span className="text-nowrap">Sign in</span>
-                                    </Link>
+                                    {!isPending && !session && (
+                                        <Link href="/login" className={buttonVariants({ variant: 'outline', className: 'w-full sm:w-auto border-2' })}>
+                                            <span className="text-nowrap">Sign in</span>
+                                        </Link>
+                                    )}
                                 </motion.div>
                             </motion.div>
 
